@@ -1,0 +1,30 @@
+# splash.yaml
+flutter_native_splash:
+  # Enable/disable per platform
+  android: true
+  ios: true
+  web: false
+
+  # Base (light) theme
+  color: "#FFFFFF"
+  image: assets/icons/app_icon3.png
+
+  # Dark theme
+  color_dark: "#000000"
+  image_dark: assets/icons/app_icon3_dark.png
+
+  # Optional: small mark at the bottom (remove if not needed)
+  # branding: assets/logos/brand_mark.png
+  # branding_dark: assets/logos/brand_mark_dark.png
+
+  # Android 12+ uses a separate API
+  android_12:
+    image: assets/icons/app_icon3.png
+    image_dark: assets/icons/app_icon3_dark.png
+    icon_background_color: "#FFFFFF"
+    icon_background_color_dark: "#000000"
+
+  # Layout & behavior (tune as you like)
+  fullscreen: false # true = hide status bar on splash
+  android_gravity: center # center | bottom | etc.
+  ios_content_mode: center # scaleAspectFit-like centering

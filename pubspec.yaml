@@ -1,0 +1,93 @@
+name: amazify
+description: "A new Flutter project."
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  animate_do: ^4.2.0
+  audioplayers: ^6.5.0
+  babstrap_settings_screen: ^0.1.7
+  cupertino_icons: ^1.0.8
+  device_info_plus: ^11.5.0
+  dio: ^5.9.0
+  flutter_beautiful_popup: ^1.7.0
+  flutter_bloc: ^9.1.1
+  flutter_datetime_picker: ^1.5.1
+  flutter_launcher_icons: ^0.11.0
+  flutter_secure_storage: ^9.2.4
+  flutter_slider_drawer: ^3.0.2
+  ftoast: ^2.0.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  http: ^1.5.0
+  iconsax: ^0.0.8
+  intl: ^0.20.2
+  liquid_glass_renderer: ^0.1.1-dev.10
+  logger: ^2.6.1
+  lottie: ^3.3.0
+  panara_dialogs: ^0.1.5
+  provider: ^6.1.5
+  rive: ^0.13.20
+  shared_preferences: ^2.5.3
+  smooth_page_indicator: ^1.2.1
+  url_launcher: ^6.3.2
+  uuid: ^4.5.1
+  flutter_native_splash: ^2.2.16
+
+dev_dependencies:
+  build_runner: ^2.6.0
+  flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
+  # ⬇️ pinned to stay on image ^3.x for compatibility
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/icons/app_icon3_dark.png
+    - assets/icons/app_icon3.png
+    - assets/images/
+    - assets/logos/
+    - assets/audio/Netflix-Intro-Sound-Effect.mp3
+    - assets/audio/splashy.mp3
+    - assets/samples/animations/
+    - assets/samples/ui/rive_app/
+    - assets/samples/ui/rive_app/rive/
+    - assets/samples/ui/rive_app/images/
+    - assets/samples/ui/rive_app/images/backgrounds/
+    - assets/samples/ui/rive_app/images/topics/
+    - assets/samples/ui/rive_app/images/avatars/
+    - assets/lottie/
+
+  fonts:
+    - family: GolosText
+      fonts:
+        - asset: assets/fonts/Golos_Text/GolosText-VariableFont_wght.ttf
+          weight: 700
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins/Poppins-Bold.ttf
+          weight: 700
+
+flutter_launcher_icons:
+  image_path: "assets/icons/app_icon3.png"
+  android: true
+  ios: true
+  macos:
+    generate: true
+    image_path: "assets/icons/app_icon3.png"
+  windows:
+    generate: true
+    image_path: "assets/icons/app_icon3.png"
+  linux:
+    generate: true
+    image_path: "assets/icons/app_icon3.png"
