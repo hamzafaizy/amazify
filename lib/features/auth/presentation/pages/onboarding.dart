@@ -110,7 +110,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                         onPageChanged: (i) => setState(() => _index = i),
                         children: const [
                           _OnboardSlide(
-                            title: "Discover Top Tech",
+                            title: "Discover New Items",
                             subtitle:
                                 "Browse curated gadgets with real-time deals and a clean UI.",
                             lottieAsset: app_assets.onboard1Lottie,
