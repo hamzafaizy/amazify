@@ -44,6 +44,22 @@ class _OnBoardingViewState extends State<OnBoardingView> {
 
   @override
   Widget build(BuildContext context) {
+    final isLast = _index == 2;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final onSurface = cs.onSurface;
+
+    // Theme-aware translucent surfaces (keeps any Rive background visible)
+    final overlayColor = theme.brightness == Brightness.light
+        ? Colors.white.withOpacity(0.10)
+        : Colors.black.withOpacity(0.25);
+    final borderColor = theme.brightness == Brightness.light
+        ? Colors.black.withOpacity(0.06)
+        : Colors.white.withOpacity(0.10);
+    final pillColor = theme.brightness == Brightness.light
+        ? Colors.black.withOpacity(0.45)
+        : Colors.white.withOpacity(0.12);
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(
         255,
