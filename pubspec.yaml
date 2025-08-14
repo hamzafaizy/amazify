@@ -54,8 +54,6 @@ flutter:
   assets:
     - assets/icons/app_icon3_dark.png
     - assets/icons/app_icon3.png
-    - assets/images/
-    - assets/logos/
     - assets/audio/Netflix-Intro-Sound-Effect.mp3
     - assets/audio/splashy.mp3
     - assets/samples/animations/
