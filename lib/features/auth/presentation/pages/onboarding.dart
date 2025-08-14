@@ -57,8 +57,8 @@ class _OnBoardingViewState extends State<OnBoardingView> {
         ? Colors.white.withOpacity(0.10)
         : Colors.black.withOpacity(0.25);
     final borderColor = theme.brightness == Brightness.light
-        ? Colors.black.withOpacity(0.06)
-        : Colors.white.withOpacity(0.10);
+        ? Colors.black.withOpacity(0.16)
+        : Colors.white.withOpacity(0.25);
     final pillColor = theme.brightness == Brightness.light
         ? Colors.black.withOpacity(0.45)
         : Colors.white.withOpacity(0.12);
@@ -77,6 +77,10 @@ class _OnBoardingViewState extends State<OnBoardingView> {
                 height: DeviceUtils.getScreenHeight(context) * 0.7,
               ),
             ),
+          ),
+          ImageFiltered(
+            imageFilter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+            child: const RiveAnimation.asset(app_assets.shapesRiv),
           ),
           SafeArea(
             child: Padding(
