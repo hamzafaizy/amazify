@@ -1,6 +1,7 @@
 // lib/app.dart
 import 'package:amazify/core/theme/custom_theme/glass_backdrop.dart';
 import 'package:amazify/core/theme/custom_theme/theme_controller.dart';
+import 'package:amazify/core/theme/theme.dart';
 import 'package:amazify/features/auth/presentation/pages/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:amazify/core/splash_screen/splash_screen.dart';
@@ -42,7 +43,8 @@ class _AppState extends State<App> {
             title: 'E-Commerce',
             debugShowCheckedModeBanner: false,
             // Single source of truth: we switch the full theme instead of using themeMode/darkTheme.
-            theme: theme,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
             home: home,
           );
         },

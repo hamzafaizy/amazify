@@ -29,4 +29,18 @@ class AppTexts {
   // Errors
   static const String errorOccurred = "Something went wrong!";
   static const String noInternet = "No Internet Connection";
+
+  //Onboarding
+  static const String onboardTitle1 = "Discover New Items";
+  static const String onboardSubtitle1 =
+      "Browse curated gadgets with real-time deals and a clean UI.";
+  static const String onboardTitle2 = "Secure Checkout";
+  static const String onboardSubtitle2 =
+      "Fast, safe payments with saved addresses and 1-tap buy.";
+  static const String onboardTitle3 = "Track & Enjoy";
+  static const String onboardSubtitle3 =
+      "Live order tracking and proactive delivery updates.";
+  static const String next = "Next";
+  static const String signUp = "Sign Up";
+  static const String skip = "Skip";
 }

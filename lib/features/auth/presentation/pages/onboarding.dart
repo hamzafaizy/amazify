@@ -1,10 +1,13 @@
 // lib/features/auth/presentation/pages/onboarding.dart
 import 'dart:ui';
 import 'package:amazify/core/assets/assets.dart' as app_assets;
+import 'package:amazify/core/constants/text_strings.dart';
+import 'package:amazify/core/utils/device_utils.dart';
 import 'package:amazify/features/auth/presentation/pages/signup_page.dart';
 import 'package:amazify/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:rive/rive.dart' hide Image;
 
 class OnBoardingView extends StatefulWidget {
   const OnBoardingView({super.key});
@@ -61,132 +64,139 @@ class _OnBoardingViewState extends State<OnBoardingView> {
         : Colors.white.withOpacity(0.12);
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(
-        255,
-        255,
-        255,
-        255,
-      ), // Rive behind stays visible
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              // Top row — show Skip only on the last page
-              Row(
+      backgroundColor: theme.colorScheme.surface,
+      body: Stack(
+        children: [
+          // Background Rive animation
+          Positioned(
+            child: Center(
+              child: Image.asset(
+                app_assets.spline,
+                fit: BoxFit.none,
+                width: DeviceUtils.getScreenWidth(context) * 0.7,
+                height: DeviceUtils.getScreenHeight(context) * 0.7,
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
                 children: [
-                  const Spacer(),
-                  if (isLast)
-                    TextButton(
-                      onPressed: _skip,
-                      child: Text(
-                        "Skip",
-                        style: TextStyle(
-                          color: onSurface.withOpacity(0.8),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                  // Top row — show Skip only on the last page
+                  Row(
+                    children: [
+                      const Spacer(),
+                      if (isLast)
+                        TextButton(
+                          onPressed: _skip,
+                          child: Text(
+                            "Skip",
+                            style: TextStyle(
+                              color: onSurface.withOpacity(0.8),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Glass card with PageView
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: overlayColor,
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: borderColor),
+                          ),
+                          child: PageView(
+                            controller: _pageCtrl,
+                            onPageChanged: (i) => setState(() => _index = i),
+                            children: const [
+                              _OnboardSlide(
+                                title: AppTexts.onboardTitle1,
+                                subtitle: AppTexts.onboardSubtitle1,
+                                lottieAsset: app_assets.onboard1Lottie,
+                              ),
+                              _OnboardSlide(
+                                title: AppTexts.onboardTitle2,
+                                subtitle: AppTexts.onboardSubtitle2,
+                                lottieAsset: app_assets.onboard2Lottie,
+                              ),
+                              _OnboardSlide(
+                                title: AppTexts.onboardTitle3,
+                                subtitle: AppTexts.onboardSubtitle3,
+                                lottieAsset: app_assets.onboard3Lottie,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                ],
-              ),
-
-              const SizedBox(height: 8),
-
-              // Glass card with PageView
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: overlayColor,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: borderColor),
-                      ),
-                      child: PageView(
-                        controller: _pageCtrl,
-                        onPageChanged: (i) => setState(() => _index = i),
-                        children: const [
-                          _OnboardSlide(
-                            title: "Discover New Items",
-                            subtitle:
-                                "Browse curated gadgets with real-time deals and a clean UI.",
-                            lottieAsset: app_assets.onboard1Lottie,
-                          ),
-                          _OnboardSlide(
-                            title: "Secure Checkout",
-                            subtitle:
-                                "Fast, safe payments with saved addresses and 1-tap buy.",
-                            lottieAsset: app_assets.onboard2Lottie,
-                          ),
-                          _OnboardSlide(
-                            title: "Track & Enjoy",
-                            subtitle:
-                                "Live order tracking and proactive delivery updates.",
-                            lottieAsset: app_assets.onboard3Lottie,
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
-                ),
-              ),
 
-              const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-              // Bottom controls: dots (left) + Next/Sign Up (right)
-              Row(
-                children: [
-                  _Dots(current: _index, count: 3),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: _goNext,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.06),
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: borderColor),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.07),
-                            blurRadius: 12,
-                            offset: const Offset(0, 8),
+                  // Bottom controls: dots (left) + Next/Sign Up (right)
+                  Row(
+                    children: [
+                      _Dots(current: _index, count: 3),
+                      const Spacer(),
+                      GestureDetector(
+                        onTap: _goNext,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
                           ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            isLast ? "Sign Up" : "Next",
-                            style: TextStyle(
-                              color: onSurface,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                            ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.06),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: borderColor),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.07),
+                                blurRadius: 12,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            isLast
-                                ? Icons.person_add_alt_1_rounded
-                                : Icons.arrow_forward_rounded,
-                            color: onSurface,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                isLast ? "Sign Up" : "Next",
+                                style: TextStyle(
+                                  color: onSurface,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Icon(
+                                isLast
+                                    ? Icons.person_add_alt_1_rounded
+                                    : Icons.arrow_forward_rounded,
+                                color: onSurface,
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
