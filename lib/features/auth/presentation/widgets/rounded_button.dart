@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class SocialRoundedButton extends StatelessWidget {
   const SocialRoundedButton({
+    super.key,
     required this.icon,
     required this.label,
     required this.onPressed,

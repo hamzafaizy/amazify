@@ -2,9 +2,7 @@
 import 'package:amazify/core/theme/custom_theme/glass_backdrop.dart';
 import 'package:amazify/core/theme/custom_theme/theme_controller.dart';
 import 'package:amazify/core/theme/theme.dart';
-import 'package:amazify/features/auth/presentation/pages/sign_up.dart';
 import 'package:amazify/features/auth/presentation/pages/onboarding.dart';
-import 'package:amazify/features/auth/presentation/pages/sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:amazify/core/splash_screen/splash_screen.dart';
 

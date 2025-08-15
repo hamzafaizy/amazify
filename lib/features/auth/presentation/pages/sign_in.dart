@@ -1,6 +1,7 @@
 import 'package:amazify/core/assets/assets.dart' as app_assets;
 import 'package:amazify/core/theme/app_pallete.dart';
 import 'package:amazify/features/auth/presentation/pages/sign_up.dart';
+import 'package:amazify/features/auth/presentation/widgets/agree_checkbox.dart';
 import 'package:amazify/features/auth/presentation/widgets/input_decor_box.dart';
 import 'package:amazify/features/auth/presentation/widgets/rounded_button.dart';
 import 'package:amazify/home_page.dart';
@@ -30,8 +31,9 @@ class _SignInViewState extends State<SignInView> {
 
   bool _obscure = true;
   bool _rememberMe = true;
-  bool _loading = false;
+  final bool _loading = false;
   bool create_account = false;
+  bool _agreed = false;
 
   late SMITrigger _successAnim;
   late SMITrigger _errorAnim;
@@ -681,6 +683,14 @@ class _SignInViewState extends State<SignInView> {
                     }
                     return null;
                   },
+                ),
+
+                SizedBox(height: spacing),
+                AgreeToPolicies(
+                  initialValue: _agreed,
+                  privacyUrl: 'https://example.com/privacy',
+                  termsUrl: 'https://example.com/terms',
+                  onChanged: (v) => setState(() => _agreed = v),
                 ),
 
                 SizedBox(height: spacing),
