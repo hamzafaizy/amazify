@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:amazify/core/assets/assets.dart' as app_assets;
 import 'package:amazify/core/constants/text_strings.dart';
 import 'package:amazify/core/utils/device_utils.dart';
-import 'package:amazify/features/auth/presentation/pages/signup_page.dart';
+import 'package:amazify/features/auth/presentation/pages/sign_in.dart';
 import 'package:amazify/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
