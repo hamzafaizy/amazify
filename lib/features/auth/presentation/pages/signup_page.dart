@@ -1,7 +1,10 @@
 import 'package:amazify/core/assets/assets.dart' as app_assets;
 import 'package:amazify/core/theme/app_pallete.dart';
+import 'package:amazify/home_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rive/rive.dart' hide LinearGradient, Image;
 
 class SignInView extends StatefulWidget {
@@ -14,8 +17,13 @@ class SignInView extends StatefulWidget {
 }
 
 class _SignInViewState extends State<SignInView> {
-  final _emailController = TextEditingController();
-  final _passController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _emailCtrl = TextEditingController();
+  final _passCtrl = TextEditingController();
+
+  bool _obscure = true;
+  bool _rememberMe = true;
+  bool _loading = false;
 
   late SMITrigger _successAnim;
   late SMITrigger _errorAnim;
@@ -25,8 +33,8 @@ class _SignInViewState extends State<SignInView> {
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passController.dispose();
+    _emailCtrl.dispose();
+    _passCtrl.dispose();
     super.dispose();
   }
 
@@ -55,8 +63,8 @@ class _SignInViewState extends State<SignInView> {
       _isLoading = true;
     });
 
-    bool isEmailValid = _emailController.text.trim().isNotEmpty;
-    bool isPassValid = _passController.text.trim().isNotEmpty;
+    bool isEmailValid = _emailCtrl.text.trim().isNotEmpty;
+    bool isPassValid = _passCtrl.text.trim().isNotEmpty;
     bool isValid = isEmailValid && isPassValid;
 
     Future.delayed(const Duration(seconds: 1), () {
@@ -72,17 +80,23 @@ class _SignInViewState extends State<SignInView> {
 
     if (isValid) {
       Future.delayed(const Duration(seconds: 4), () {
-        widget.closeModal!();
-        _emailController.text = "";
-        _passController.text = "";
+        Navigator.of(
+          context,
+        ).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
+        _emailCtrl.text = "";
+        _passCtrl.text = "";
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cs = Theme.of(context).colorScheme;
+    final spacing = 15.0;
+
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Theme.of(context).secondaryHeaderColor.withOpacity(0.7),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -93,90 +107,131 @@ class _SignInViewState extends State<SignInView> {
                   margin: const EdgeInsets.all(16),
                   padding: const EdgeInsets.all(1),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    gradient: LinearGradient(
-                      colors: [Colors.white.withOpacity(0.8), Colors.white10],
+                    border: Border.all(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.1),
+                      width: 3,
                     ),
+                    borderRadius: BorderRadius.circular(20),
+                    gradient:
+                        Theme.of(context).colorScheme.brightness ==
+                            Brightness.dark
+                        ? AppPallete.darkGradient
+                        : AppPallete.lightGradient,
                   ),
                   child: Container(
                     padding: const EdgeInsets.all(29),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
-                        BoxShadow(
-                          color: AppPallete.shadow.withOpacity(0.3),
-                          offset: const Offset(0, 3),
-                          blurRadius: 5,
-                        ),
-                        BoxShadow(
-                          color: AppPallete.shadow.withOpacity(0.3),
-                          offset: const Offset(0, 30),
-                          blurRadius: 30,
-                        ),
+                        // BoxShadow(
+                        // color: AppPallete.shadow.withOpacity(0.3),
+                        // offset: const Offset(0, 3),
+                        // blurRadius: 5,
+                        // ),
+                        // BoxShadow(
+                        //   color: AppPallete.shadow.withOpacity(0.3),
+                        //   offset: const Offset(0, 30),
+                        //   blurRadius: 30,
+                        // ),
                       ],
-                      color: CupertinoColors.secondarySystemBackground,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surface.withOpacity(0.2),
                       // This kind of give the background iOS style "Frosted Glass" effect,
                       // it works for this particular color, might not for other
-                      backgroundBlendMode: BlendMode.luminosity,
+                      // backgroundBlendMode: BlendMode.luminosity,
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
-                          "Sign In",
-                          style: TextStyle(fontFamily: "Poppins", fontSize: 34),
+                        // HEADER: App Icon that switches with theme
+                        Hero(
+                          tag: 'app_icon',
+                          child:
+                              Image.asset(
+                                    isDark
+                                        ? 'assets/icons/app_icon3_dark.png'
+                                        : 'assets/icons/app_icon3.png',
+                                    height: 150,
+                                    fit: BoxFit.contain,
+                                    alignment: Alignment.topLeft,
+                                  )
+                                  .animate()
+                                  .fadeIn(duration: 400.ms)
+                                  .scale(
+                                    begin: const Offset(0.95, 0.95),
+                                    end: const Offset(1, 1),
+                                    duration: 350.ms,
+                                  ),
                         ),
-                        const SizedBox(height: 24),
-                        const Text(
-                          "Access to 240+ hours of content. Learn design and code, by building real apps with React and Swift.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: "Inter",
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
+                        const SizedBox(height: 1),
+                        Text(
+                          'Welcome back',
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Sign in to continue',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: cs.onSurfaceVariant),
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          decoration: _authDecoration(
+                            context,
+                            'Email',
+                            Icons.email_outlined,
                           ),
+                          controller: _emailCtrl,
+                          keyboardType: TextInputType.emailAddress,
                         ),
-                        const SizedBox(height: 24),
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "Email",
-                            style: TextStyle(
-                              color: CupertinoColors.secondaryLabel,
-                              fontFamily: "Inter",
-                              fontSize: 15,
-                            ),
-                          ),
+                        const SizedBox(height: 18),
+
+                        // const SizedBox(height: 20),
+                        TextFormField(
+                          controller: _passCtrl,
+                          obscureText: _obscure,
+                          decoration:
+                              _authDecoration(
+                                context,
+                                'Password',
+                                Icons.lock_outline,
+                              ).copyWith(
+                                suffixIcon: IconButton(
+                                  onPressed: () =>
+                                      setState(() => _obscure = !_obscure),
+                                  icon: Icon(
+                                    _obscure
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                  ),
+                                  tooltip: _obscure
+                                      ? 'Show password'
+                                      : 'Hide password',
+                                ),
+                              ),
+                          validator: (v) {
+                            if (v == null || v.isEmpty) {
+                              return 'Password is required';
+                            }
+                            if (v.length < 6) {
+                              return 'Use at least 6 characters';
+                            }
+                            return null;
+                          },
                         ),
-                        const SizedBox(height: 8),
-                        TextField(
-                          decoration: authInputStyle("icon_email"),
-                          controller: _emailController,
-                        ),
-                        const SizedBox(height: 24),
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "Password",
-                            style: TextStyle(
-                              color: CupertinoColors.secondaryLabel,
-                              fontFamily: "Inter",
-                              fontSize: 15,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        TextField(
-                          obscureText: true,
-                          decoration: authInputStyle("icon_lock"),
-                          controller: _passController,
-                        ),
-                        const SizedBox(height: 24),
+
+                        SizedBox(height: spacing),
                         Container(
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFF77D8E).withOpacity(0.5),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withOpacity(0.2),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
@@ -184,7 +239,7 @@ class _SignInViewState extends State<SignInView> {
                           ),
                           child: CupertinoButton(
                             padding: const EdgeInsets.all(20),
-                            color: const Color(0xFFF77D8E),
+                            color: Theme.of(context).colorScheme.primary,
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(8),
                               topRight: Radius.circular(20),
@@ -193,7 +248,7 @@ class _SignInViewState extends State<SignInView> {
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
+                              children: [
                                 Icon(Icons.arrow_forward_rounded),
                                 SizedBox(width: 4),
                                 Text(
@@ -202,6 +257,9 @@ class _SignInViewState extends State<SignInView> {
                                     fontSize: 17,
                                     fontFamily: "Inter",
                                     fontWeight: FontWeight.bold,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onPrimary,
                                   ),
                                 ),
                               ],
@@ -211,43 +269,95 @@ class _SignInViewState extends State<SignInView> {
                             },
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 24.0),
-                          child: Row(
-                            children: [
-                              const Expanded(child: Divider()),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                ),
-                                child: Text(
-                                  "OR",
-                                  style: TextStyle(
-                                    color: Colors.black.withOpacity(0.3),
-                                    fontSize: 15,
-                                    fontFamily: "Inter",
-                                  ),
-                                ),
+                        // CREATE ACCOUNT
+                        SizedBox(height: spacing + 10),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: cs.onSurface,
+                              side: BorderSide(color: cs.onSurface),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              const Expanded(child: Divider()),
-                            ],
+                            ),
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Create account tapped'),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'Create account',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
                           ),
                         ),
-                        const Text(
-                          "Sign up with Email, Apple or Google",
-                          style: TextStyle(
-                            color: CupertinoColors.secondaryLabel,
-                            fontFamily: "Inter",
-                            fontSize: 15,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
+
+                        // DIVIDER: Or sign in with
+                        SizedBox(height: spacing + 15),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Image.asset(app_assets.logoEmail),
-                            Image.asset(app_assets.logoApple),
-                            Image.asset(app_assets.logoGoogle),
+                            Expanded(child: Divider(color: cs.onSurface)),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              child: Text(
+                                'Or sign in with',
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: cs.onSurface),
+                              ),
+                            ),
+                            Expanded(child: Divider(color: cs.onSurface)),
+                          ],
+                        ),
+                        SizedBox(height: spacing + 2),
+
+                        // SOCIAL BUTTONS
+                        SizedBox(height: spacing),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _SocialRoundedButton(
+                                icon: Image.asset(
+                                  'assets/Images/google_logo.png',
+                                  height: 24,
+                                  width: 24,
+                                  fit: BoxFit.contain,
+                                ),
+                                label: '',
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Google sign-in tapped'),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            // const SizedBox(width: 20),
+                            Expanded(
+                              child: _SocialRoundedButton(
+                                icon: Image.asset(
+                                  'assets/Images/facebook_logo.png',
+                                  height: 24,
+                                  width: 24,
+                                  fit: BoxFit.contain,
+                                ),
+                                label: '',
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Facebook sign-in tapped'),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            SizedBox(height: spacing + 2),
                           ],
                         ),
                       ],
@@ -305,7 +415,15 @@ class _SignInViewState extends State<SignInView> {
                         width: 36,
                         height: 36,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          border: Border.all(
+                            width: 2,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withOpacity(0.7),
+                          ),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surface.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(36 / 2),
                           boxShadow: [
                             BoxShadow(
@@ -315,7 +433,11 @@ class _SignInViewState extends State<SignInView> {
                             ),
                           ],
                         ),
-                        child: const Icon(Icons.close, color: Colors.black),
+                        child: Icon(
+                          Icons.close,
+                          color: Theme.of(context).colorScheme.onSurface,
+                          size: 20,
+                        ),
                       ),
                     ),
                   ),
@@ -327,25 +449,94 @@ class _SignInViewState extends State<SignInView> {
       ),
     );
   }
+
+  // Common style for Auth Input fields email and password
+  InputDecoration authInputStyle(BuildContext context, String iconName) {
+    return InputDecoration(
+      filled: true,
+      fillColor: Theme.of(context).colorScheme.surface.withOpacity(0.2),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
+      ),
+      contentPadding: const EdgeInsets.all(15),
+      prefixIcon: Padding(
+        padding: const EdgeInsets.only(left: 4),
+        child: Image.asset("assets/samples/ui/rive_app/images/$iconName.png"),
+      ),
+    );
+  }
 }
 
-// Common style for Auth Input fields email and password
-InputDecoration authInputStyle(String iconName) {
+// ---------------Text Field Decoration for Auth Inputs----------------
+InputDecoration _authDecoration(
+  BuildContext context,
+  String label,
+  IconData icon,
+) {
+  final cs = Theme.of(context).colorScheme;
   return InputDecoration(
+    labelText: label,
+    prefixIcon: Icon(icon),
     filled: true,
-    fillColor: Colors.white,
+    fillColor: cs.surfaceContainerHigh,
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(50)),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
-      borderSide: BorderSide(color: Colors.black.withOpacity(0.1)),
+      borderSide: BorderSide(color: cs.outlineVariant),
     ),
     focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
-      borderSide: BorderSide(color: Colors.black.withOpacity(0.1)),
+      borderRadius: BorderRadius.circular(14),
+      borderSide: BorderSide(color: cs.primary),
     ),
-    contentPadding: const EdgeInsets.all(15),
-    prefixIcon: Padding(
-      padding: const EdgeInsets.only(left: 4),
-      child: Image.asset("assets/samples/ui/rive_app/images/$iconName.png"),
-    ),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
   );
+}
+
+//------social button widget for rounded buttons with icon and label
+class _SocialRoundedButton extends StatelessWidget {
+  const _SocialRoundedButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+    this.diameter = 56, // tweak size here
+    this.filled = false, // set true for filled circle
+  });
+
+  final Widget icon;
+  final String label; // used for semantics/tooltip
+  final VoidCallback onPressed;
+  final double diameter;
+  final bool filled;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return Tooltip(
+      message: label,
+      child: Semantics(
+        button: true,
+        label: label,
+        child: OutlinedButton(
+          onPressed: onPressed,
+          style: OutlinedButton.styleFrom(
+            shape: const CircleBorder(),
+            fixedSize: Size.square(diameter), // exact width & height
+            padding: EdgeInsets.zero, // center the icon
+            side: BorderSide(color: cs.onSurface.withOpacity(0.25)),
+            foregroundColor: filled ? cs.onPrimary : cs.onSurface,
+            backgroundColor: filled ? cs.primary : null,
+          ),
+          child: Center(child: icon),
+        ),
+      ),
+    );
+  }
 }

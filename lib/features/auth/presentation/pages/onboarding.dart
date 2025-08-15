@@ -2,11 +2,9 @@
 import 'dart:ui';
 import 'package:amazify/core/assets/assets.dart' as app_assets;
 import 'package:amazify/core/constants/text_strings.dart';
-import 'package:amazify/core/theme/app_pallete.dart';
 import 'package:amazify/core/utils/device_utils.dart';
 import 'package:amazify/features/auth/presentation/pages/signup_page.dart';
 import 'package:amazify/home_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:lottie/lottie.dart';
@@ -113,16 +111,13 @@ class _OnBoardingViewState extends State<OnBoardingView>
             ),
           ),
           if (showSignInView)
-            Container(
-              color: theme.colorScheme.surface.withOpacity(0.9),
-              child: SignInView(
-                closeModal: () {
-                  setState(() {
-                    showSignInView = false;
-                  });
-                  _signInAnimController?.reverse();
-                },
-              ),
+            SignInView(
+              closeModal: () {
+                setState(() {
+                  showSignInView = false;
+                });
+                _signInAnimController?.reverse();
+              },
             ),
         ],
       ),

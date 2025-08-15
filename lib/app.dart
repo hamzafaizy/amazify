@@ -2,7 +2,9 @@
 import 'package:amazify/core/theme/custom_theme/glass_backdrop.dart';
 import 'package:amazify/core/theme/custom_theme/theme_controller.dart';
 import 'package:amazify/core/theme/theme.dart';
+import 'package:amazify/features/auth/presentation/pages/login_page.dart';
 import 'package:amazify/features/auth/presentation/pages/onboarding.dart';
+import 'package:amazify/features/auth/presentation/pages/signup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:amazify/core/splash_screen/splash_screen.dart';
 
@@ -31,7 +33,7 @@ class _AppState extends State<App> {
             lightLogo: 'assets/icons/app_icon3.png',
             darkLogo: 'assets/icons/app_icon3_dark.png',
             audioAsset: 'audio/Netflix-Intro-Sound-Effect.mp3',
-            totalMs: 4000,
+            totalMs: 5000,
             next: OnBoardingView(),
           );
 
@@ -45,6 +47,7 @@ class _AppState extends State<App> {
             // Single source of truth: we switch the full theme instead of using themeMode/darkTheme.
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
+            themeMode: ThemeMode.system,
             home: home,
           );
         },

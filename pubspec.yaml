@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_animate: ^4.0.0
+  font_awesome_flutter: ^10.2.0
 
   animate_do: ^4.2.0
   audioplayers: ^6.5.0
@@ -64,6 +66,7 @@ flutter:
     - assets/samples/ui/rive_app/images/topics/
     - assets/samples/ui/rive_app/images/avatars/
     - assets/lottie/
+    - assets/Images/
 
   fonts:
     - family: GolosText
