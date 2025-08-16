@@ -1,4 +1,4 @@
-import 'package:amazify/core/theme/custom_theme/theme_toggle.dart';
+import 'package:amazify/app/theme/custom_theme/theme_toggle.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {

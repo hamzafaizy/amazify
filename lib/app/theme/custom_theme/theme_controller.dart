@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:amazify/core/theme/theme.dart';
+import 'package:amazify/app/theme/theme.dart';
 
 /// Three explicit modes (no "system" here because we need a third, custom theme)
 enum ThemeKind { light, dark, glass }

@@ -1,6 +1,7 @@
 import 'package:amazify/core/assets/assets.dart' as app_assets;
-import 'package:amazify/core/theme/app_pallete.dart';
+import 'package:amazify/app/theme/app_pallete.dart';
 import 'package:amazify/features/auth/presentation/pages/sign_up.dart';
+import 'package:amazify/features/auth/presentation/pages/verify_email.dart';
 import 'package:amazify/features/auth/presentation/widgets/agree_checkbox.dart';
 import 'package:amazify/features/auth/presentation/widgets/input_decor_box.dart';
 import 'package:amazify/features/auth/presentation/widgets/rounded_button.dart';
@@ -71,6 +72,10 @@ class _SignInViewState extends State<SignInView> {
   void login() {
     setState(() {
       _isLoading = true;
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const VerifyEmailPage()),
+      );
     });
 
     bool isEmailValid = _emailCtrl.text.trim().isNotEmpty;
@@ -721,7 +726,7 @@ class _SignInViewState extends State<SignInView> {
                         Icon(Icons.arrow_forward_rounded),
                         SizedBox(width: 4),
                         Text(
-                          "Sign In",
+                          "Create Account",
                           style: TextStyle(
                             fontSize: 17,
                             fontFamily: "Inter",

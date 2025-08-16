@@ -1,4 +1,4 @@
-import 'package:amazify/core/theme/custom_theme/theme_controller.dart';
+import 'package:amazify/app/theme/custom_theme/theme_controller.dart';
 import 'package:flutter/material.dart';
 
 class ThemeToggle extends StatelessWidget {
@@ -35,7 +35,9 @@ class ThemeToggle extends StatelessWidget {
         height: 40,
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(.6),
+          color: Theme.of(
+            context,
+          ).colorScheme.surfaceContainerHighest.withOpacity(.6),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: Theme.of(context).colorScheme.outlineVariant,
