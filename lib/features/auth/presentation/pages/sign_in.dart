@@ -1,5 +1,6 @@
 import 'package:amazify/core/assets/assets.dart' as app_assets;
 import 'package:amazify/app/theme/app_pallete.dart';
+import 'package:amazify/features/auth/presentation/pages/forget_password.dart';
 import 'package:amazify/features/auth/presentation/pages/sign_up.dart';
 import 'package:amazify/features/auth/presentation/pages/verify_email.dart';
 import 'package:amazify/features/auth/presentation/widgets/agree_checkbox.dart';
@@ -261,9 +262,11 @@ class _SignInViewState extends State<SignInView> {
                     const Spacer(),
                     TextButton(
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Forgot password tapped'),
+                        // From anywhere:
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ForgetPasswordPage(),
                           ),
                         );
                       },
