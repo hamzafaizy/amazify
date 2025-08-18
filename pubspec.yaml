@@ -42,6 +42,7 @@ dependencies:
   url_launcher: ^6.3.2
   uuid: ^4.5.1
   flutter_native_splash: ^2.2.16
+  carousel_slider: ^5.1.1
 
 dev_dependencies:
   build_runner: ^2.6.0

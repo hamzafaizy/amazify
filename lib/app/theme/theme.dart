@@ -28,7 +28,7 @@ class AppTheme {
     onTertiary: Colors.white,
     onSurface: Colors.black87,
     onError: Colors.white,
-    primaryContainer: Colors.blueAccent.shade100,
+    primaryContainer: const Color.fromARGB(255, 161, 197, 255),
     secondaryContainer: Colors.amber.shade100,
     tertiaryContainer: Colors.blueGrey.shade100,
     surfaceContainerLow: Colors.white70,
@@ -41,7 +41,7 @@ class AppTheme {
   static final ColorScheme _darkScheme = ColorScheme.fromSeed(
     seedColor: _seed,
     brightness: Brightness.dark,
-    primary: Colors.blueAccent.shade200,
+    primary: Colors.blueAccent.shade700,
     secondary: Colors.amber,
     tertiary: Colors.blueGrey,
     surface: Colors.black87,

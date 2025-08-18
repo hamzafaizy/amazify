@@ -1,9 +1,14 @@
+import 'package:amazify/features/shop/presentation/pages/cart.dart';
+import 'package:amazify/features/shop/presentation/pages/notifications.dart';
 import 'package:amazify/features/shop/presentation/widgets/badge_button.dart';
 import 'package:amazify/features/shop/presentation/widgets/brand_card.dart';
 import 'package:amazify/features/shop/presentation/widgets/category_bubble.dart';
 import 'package:amazify/features/shop/presentation/widgets/custom_appbar.dart';
+import 'package:amazify/features/shop/presentation/widgets/dashed_carousal_ind.dart';
+import 'package:amazify/features/shop/presentation/widgets/product_box.dart';
 import 'package:amazify/features/shop/presentation/widgets/rounded_clipper.dart';
 import 'package:amazify/features/shop/presentation/widgets/search_bar.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -17,35 +22,63 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _brandCtrl = PageController(viewportFraction: 0.88);
   int _brandPage = 0;
-
-  final List<_Category> _categories = const [
-    _Category('Sports', Icons.sports_soccer),
-    _Category('Furniture', Icons.chair_outlined),
-    _Category('Electro', Icons.devices_other),
-    _Category('Clothes', Icons.checkroom_outlined),
-    _Category('Beauty', Icons.brush_outlined),
-    _Category('Books', Icons.menu_book_outlined),
+  final controller = CarouselSliderController(); // v5+ controller
+  int current = 0;
+  final List<String> images = [
+    'assets/Images/ban1.png',
+    'assets/Images/ban2.png',
+    'assets/Images/ban3.png',
+    'assets/Images/ban4.png',
+    'assets/Images/ban5.png',
+  ];
+  final List<Category> _categories = const [
+    Category('Sports', Icons.sports_soccer),
+    Category('Furniture', Icons.chair_outlined),
+    Category('Electro', Icons.devices_other),
+    Category('Clothes', Icons.checkroom_outlined),
+    Category('Beauty', Icons.brush_outlined),
+    Category('Books', Icons.menu_book_outlined),
   ];
 
-  final List<BrandCardData> _brands = const [
-    BrandCardData('Nike', 'Air Zoom Series', 24),
-    BrandCardData('Adidas', 'Ultraboost Line', 18),
-    BrandCardData('IKEA', 'Minimal Chairs', 12),
-    BrandCardData('Apple', 'Latest Accessories', 9),
-  ];
-
-  final List<_Product> _products = const [
-    _Product('Nike Air Max', 129.99),
-    _Product('Adidas Samba', 109.00),
-    _Product('Wooden Chair', 79.50),
-    _Product('Smart Watch', 199.00),
-    _Product('Blue Hoodie', 49.99),
-    _Product('Wireless Buds', 59.99),
-    _Product('Reading Lamp', 39.50),
-    _Product('Fitness Bottle', 19.99),
+  final List<String> _brands = [
+    'Nike',
+    'Adidas',
+    'IKEA',
+    'Samsung',
+    'Apple',
+    'Sony',
   ];
 
   final Set<int> _liked = {};
+
+  final List<ProductsCard> _cart = [];
+  final Set<String> _wishlist = {};
+
+  void _addToCart(ProductsCard p) {
+    setState(() {
+      _cart.add(
+        ProductsCard(
+          id: p.id,
+          title: p.title,
+          imageUrl: p.imageUrl,
+          price: p.price,
+          brand: p.brand,
+          currencySymbol: p.currencySymbol,
+        ),
+      );
+    }); // TODO: show snackbar / call your Cart provider
+  }
+
+  void _toggleWishlist(ProductsCard p) {
+    setState(() {
+      if (_wishlist.contains(p.id)) {
+        _wishlist.remove(p.id);
+      } else {
+        _wishlist.add(p.id);
+      }
+    });
+    // TODO: call your Wishlist provider
+  }
 
   @override
   void initState() {
@@ -140,14 +173,29 @@ class _HomePageState extends State<HomePage> {
                                   count: 3,
                                   iconColor: cs.onPrimary.withOpacity(0.9),
                                   badgeColor: cs.error.withOpacity(0.9),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            const NotificationsPage(),
+                                      ),
+                                    );
+                                  },
                                 ),
                                 BadgeIconButton(
                                   icon: Iconsax.shopping_bag,
                                   count: 12,
                                   iconColor: cs.onPrimary.withOpacity(0.9),
                                   badgeColor: cs.error.withOpacity(0.9),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const CartPage(),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ],
                             ),
@@ -216,41 +264,53 @@ class _HomePageState extends State<HomePage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 // Brand swipe cards
-                SizedBox(
-                  height: 170,
-                  child: PageView.builder(
-                    controller: _brandCtrl,
-                    itemCount: _brands.length,
-                    itemBuilder: (_, i) => BrandCard(data: _brands[i]),
+                Center(
+                  child: SizedBox(
+                    height: 220,
+                    width: 400,
+                    child: CarouselSlider(
+                      carouselController: controller,
+                      items: images.map((path) {
+                        return RoundedBannerImage(
+                          imageUrl: path,
+                          width: double.infinity,
+                          height: 220,
+                          fit: BoxFit.cover,
+                          borderRadius: 16,
+                        );
+                      }).toList(),
+                      options: CarouselOptions(
+                        height: 220,
+                        viewportFraction: 1,
+                        enableInfiniteScroll: true,
+                        autoPlay: true,
+                        onPageChanged: (index, reason) {
+                          setState(() => current = index);
+                        },
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),
-                // Dots
-                SizedBox(
-                  height: 28,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _brands.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 5),
-                    itemBuilder: (_, i) {
-                      final active = i == _brandPage;
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
-                        height: active ? 22 : 5,
-                        width: active ? 22 : 5,
-                        decoration: BoxDecoration(
-                          color: active
-                              ? cs.primary
-                              : cs.onSurface.withOpacity(0.25),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      );
-                    },
+
+                // Dashed indicator
+                DashedCarouselIndicator(
+                  length: images.length,
+                  currentIndex: current,
+                  dashWidth: 18,
+                  dashHeight: 3.5,
+                  spacing: 6,
+                  activeScale: 1.8,
+                  activeColor: cs.primary,
+                  inactiveColor: cs.onSurface.withOpacity(0.25),
+                  onTap: (i) => controller.animateToPage(
+                    i,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOut,
                   ),
-                ),
+                ), // Dots
                 const SizedBox(height: 8),
 
                 // Popular Products + View all
@@ -273,40 +333,6 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 // Grid
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: const EdgeInsets.only(bottom: 20),
-                    shrinkWrap: true,
-                    itemCount: _products.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          childAspectRatio: 0.72,
-                        ),
-                    itemBuilder: (_, i) {
-                      final p = _products[i];
-                      final liked = _liked.contains(i);
-                      return _ProductCard(
-                        name: p.name,
-                        price: p.price,
-                        liked: liked,
-                        onLike: () {
-                          setState(() {
-                            if (liked) {
-                              _liked.remove(i);
-                            } else {
-                              _liked.add(i);
-                            }
-                          });
-                        },
-                      );
-                    },
-                  ),
-                ),
               ],
             ),
           ],
@@ -336,99 +362,8 @@ class circular_fadbox extends StatelessWidget {
 
 // -------------------- Widgets & Models --------------------
 
-class _Product {
-  final String name;
-  final double price;
-  const _Product(this.name, this.price);
-}
-
-class _ProductCard extends StatelessWidget {
-  const _ProductCard({
-    required this.name,
-    required this.price,
-    required this.liked,
-    required this.onLike,
-  });
-
-  final String name;
-  final double price;
-  final bool liked;
-  final VoidCallback onLike;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
-    return Material(
-      color: cs.surface,
-      borderRadius: BorderRadius.circular(16),
-      elevation: 0.5,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () {},
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Image placeholder
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: cs.primary.withOpacity(0.08),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.image_outlined, size: 44),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "\$${price.toStringAsFixed(2)}",
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: cs.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Like button
-            Positioned(
-              top: 6,
-              right: 6,
-              child: IconButton(
-                onPressed: onLike,
-                icon: Icon(
-                  liked ? Icons.favorite : Icons.favorite_border,
-                  color: liked
-                      ? Colors.redAccent
-                      : cs.onSurface.withOpacity(0.6),
-                ),
-                splashRadius: 20,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Category {
+class Category {
   final String name;
   final IconData icon;
-  const _Category(this.name, this.icon);
+  const Category(this.name, this.icon);
 }
