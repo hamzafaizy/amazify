@@ -1,5 +1,4 @@
 //------social button widget for rounded buttons with icon and label
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SocialRoundedButton extends StatelessWidget {

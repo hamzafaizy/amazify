@@ -1,5 +1,4 @@
 // lib/features/auth/presentation/pages/password_rest.dart
-import 'package:amazify/features/auth/presentation/pages/sign_in.dart';
 import 'package:amazify/features/onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';

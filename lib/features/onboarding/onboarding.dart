@@ -4,7 +4,8 @@ import 'package:amazify/core/assets/assets.dart' as app_assets;
 import 'package:amazify/core/constants/text_strings.dart';
 import 'package:amazify/core/utils/device_utils.dart';
 import 'package:amazify/features/auth/presentation/pages/sign_in.dart';
-import 'package:amazify/home_page.dart';
+import 'package:amazify/features/shop/presentation/widgets/bottom_nav_bar.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:lottie/lottie.dart';
@@ -71,7 +72,7 @@ class _OnBoardingViewState extends State<OnBoardingView>
   void _skip() {
     Navigator.of(
       context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const RootNav()));
   }
 
   @override

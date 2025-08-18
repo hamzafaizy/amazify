@@ -1,16 +1,14 @@
 import 'package:amazify/core/assets/assets.dart' as app_assets;
 import 'package:amazify/app/theme/app_pallete.dart';
 import 'package:amazify/features/auth/presentation/pages/forget_password.dart';
-import 'package:amazify/features/auth/presentation/pages/sign_up.dart';
 import 'package:amazify/features/auth/presentation/pages/verify_email.dart';
 import 'package:amazify/features/auth/presentation/widgets/agree_checkbox.dart';
 import 'package:amazify/features/auth/presentation/widgets/input_decor_box.dart';
 import 'package:amazify/features/auth/presentation/widgets/rounded_button.dart';
-import 'package:amazify/home_page.dart';
+import 'package:amazify/features/shop/presentation/widgets/bottom_nav_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rive/rive.dart' hide LinearGradient, Image;
 
 class SignInView extends StatefulWidget {
@@ -98,7 +96,7 @@ class _SignInViewState extends State<SignInView> {
       Future.delayed(const Duration(seconds: 4), () {
         Navigator.of(
           context,
-        ).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
+        ).pushReplacement(MaterialPageRoute(builder: (_) => const RootNav()));
         _emailCtrl.text = "";
         _passCtrl.text = "";
       });
