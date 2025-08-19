@@ -401,7 +401,7 @@ class _QtyButton extends StatelessWidget {
           border: Border.all(color: cs.onSurface.withOpacity(0.12)),
           color: Theme.of(context).brightness == Brightness.dark
               ? cs.surface
-              : cs.surfaceVariant.withOpacity(0.25),
+              : cs.surfaceContainerHighest.withOpacity(0.25),
         ),
         child: Icon(
           icon,

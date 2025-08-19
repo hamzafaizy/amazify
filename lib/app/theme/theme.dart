@@ -30,7 +30,7 @@ class AppTheme {
     onError: Colors.white,
     primaryContainer: const Color.fromARGB(255, 161, 197, 255),
     secondaryContainer: Colors.amber.shade100,
-    tertiaryContainer: Colors.blueGrey.shade100,
+    tertiaryContainer: Colors.grey.shade100,
     surfaceContainerLow: Colors.white70,
     surfaceContainerHigh: Colors.white,
     surfaceContainerHighest: Colors.white,

@@ -3,6 +3,7 @@ import 'package:iconsax/iconsax.dart';
 
 class customSearchBar extends StatelessWidget {
   const customSearchBar({
+    super.key,
     required this.hint,
     required this.fillColor,
     required this.textColor,

@@ -5,7 +5,7 @@ import 'package:amazify/features/auth/presentation/pages/verify_email.dart';
 import 'package:amazify/features/auth/presentation/widgets/agree_checkbox.dart';
 import 'package:amazify/features/auth/presentation/widgets/input_decor_box.dart';
 import 'package:amazify/features/auth/presentation/widgets/rounded_button.dart';
-import 'package:amazify/features/shop/presentation/widgets/bottom_nav_bar.dart';
+import 'package:amazify/features/shop/presentation/pages/bottom_nav_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';

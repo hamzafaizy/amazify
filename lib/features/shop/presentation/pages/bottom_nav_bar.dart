@@ -1,4 +1,7 @@
 import 'package:amazify/features/shop/presentation/pages/home_page.dart';
+import 'package:amazify/features/shop/presentation/pages/profile_page.dart';
+import 'package:amazify/features/shop/presentation/pages/store_page.dart';
+import 'package:amazify/features/shop/presentation/pages/wishlist_page.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -18,9 +21,15 @@ class _RootNavState extends State<RootNav> {
     // Your 4 tab pages
     final pages = [
       HomePage(), // HomePage()
-      Container(child: Center(child: Text('Store Page'))), // StorePage()
-      Container(child: Center(child: Text('Wishlist Page'))), // WishlistPage()
-      Container(child: Center(child: Text('Profile Page'))), // ProfilePage()
+      Center(
+        child: Container(child: Text('store')),
+      ), //StorePage(), // StorePage()
+      Center(
+        child: Container(child: Text('wishlist')),
+      ), //WishlistPage(), // WishlistPage()
+      Center(
+        child: Container(child: Text('profile')),
+      ), //ProfilePage(), // ProfilePage()
     ];
 
     return Scaffold(

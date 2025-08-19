@@ -302,7 +302,7 @@ class _FilterBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    Widget _chip(String label, _Filter f, IconData icon) {
+    Widget chip(String label, _Filter f, IconData icon) {
       final selected = current == f;
       return ChoiceChip.elevated(
         label: Row(
@@ -331,15 +331,15 @@ class _FilterBar extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          _chip('All', _Filter.all, Iconsax.category),
+          chip('All', _Filter.all, Iconsax.category),
           const SizedBox(width: 8),
-          _chip('Unread', _Filter.unread, Iconsax.eye_slash),
+          chip('Unread', _Filter.unread, Iconsax.eye_slash),
           const SizedBox(width: 8),
-          _chip('Orders', _Filter.order, Iconsax.box),
+          chip('Orders', _Filter.order, Iconsax.box),
           const SizedBox(width: 8),
-          _chip('Offers', _Filter.offer, Iconsax.discount_shape),
+          chip('Offers', _Filter.offer, Iconsax.discount_shape),
           const SizedBox(width: 8),
-          _chip('System', _Filter.system, Iconsax.setting_2),
+          chip('System', _Filter.system, Iconsax.setting_2),
         ],
       ),
     );

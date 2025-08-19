@@ -1,6 +1,7 @@
 // lib/utils/helper_utils.dart
 import 'dart:collection';
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -11,11 +12,28 @@ class HelperUtils {
 
   // ───────────────────────── UI / THEME ─────────────────────────
 
-  /// Parse a color from hex like `#2979FF`, `2979FF`, or ARGB `#FF2979FF`.
+  /// Parse a color from hex:
+  /// - RGB:   #2979FF / 2979FF
+  /// - ARGB:  #FF2979FF
+  /// - Short: #ABC (=> #AABBCC), #FABC (=> #FFAABBCC)
   /// Optionally override opacity (0..1).
   static Color getColor(String hex, {double? opacity}) {
     var cleaned = hex.replaceAll('#', '').trim();
-    if (cleaned.length == 6) cleaned = 'FF$cleaned'; // add alpha if missing
+
+    // Expand short forms (#RGB or #ARGB)
+    if (cleaned.length == 3) {
+      cleaned = cleaned.split('').map((c) => '$c$c').join(); // RRGGBB
+      cleaned = 'FF$cleaned'; // add alpha
+    } else if (cleaned.length == 4) {
+      final a = cleaned[0] * 2;
+      final r = cleaned[1] * 2;
+      final g = cleaned[2] * 2;
+      final b = cleaned[3] * 2;
+      cleaned = '$a$r$g$b';
+    } else if (cleaned.length == 6) {
+      cleaned = 'FF$cleaned'; // add alpha if missing
+    }
+
     final value = int.tryParse(cleaned, radix: 16) ?? 0xFF000000;
     var color = Color(value);
     if (opacity != null) color = color.withOpacity(opacity.clamp(0.0, 1.0));
@@ -95,9 +113,18 @@ class HelperUtils {
   static bool isWide(BuildContext context, {double breakpoint = 800}) =>
       screenWidth(context) >= breakpoint;
 
+  /// Unfocus keyboard safely.
+  static void unfocus(BuildContext context) {
+    final scope = FocusScope.of(context);
+    if (scope == null) return;
+    if (!scope.hasPrimaryFocus && scope.hasFocus) {
+      scope.unfocus();
+    }
+  }
+
   // ───────────────────────── FEEDBACK ─────────────────────────
 
-  /// Show a SnackBar anywhere.
+  /// Show a SnackBar anywhere. Does nothing if no ScaffoldMessenger is present.
   static void showSnackBar(
     BuildContext context,
     String message, {
@@ -127,20 +154,22 @@ class HelperUtils {
     String confirmText = 'OK',
     String cancelText = 'Cancel',
     bool showCancel = true,
+    bool barrierDismissible = true,
   }) {
     return showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      barrierDismissible: barrierDismissible,
+      builder: (ctx) => AlertDialog(
         title: Text(title),
         content: Text(message),
         actions: [
           if (showCancel)
             TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => Navigator.of(ctx).pop(false),
               child: Text(cancelText),
             ),
           FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(confirmText),
           ),
         ],
@@ -148,53 +177,88 @@ class HelperUtils {
     );
   }
 
-  /// Haptic feedback helper (light impact by default).
-  static Future<void> hapticLight() => HapticFeedback.lightImpact();
+  /// Haptic feedback helper (light impact by default), safely ignored on unsupported platforms.
+  static Future<void> hapticLight() async {
+    try {
+      // Avoid spamming haptics on web/desktop
+      if (kIsWeb) return;
+      switch (defaultTargetPlatform) {
+        case TargetPlatform.android:
+        case TargetPlatform.iOS:
+          await HapticFeedback.lightImpact();
+          break;
+        default:
+          // No-op for other platforms
+          break;
+      }
+    } on PlatformException {
+      // Silently ignore haptic failures
+    }
+  }
 
   // ───────────────────────── NAVIGATION ─────────────────────────
 
-  static Future<T?> navigateTo<T>(BuildContext context, Widget page) {
-    return Navigator.of(
-      context,
-    ).push<T>(MaterialPageRoute(builder: (_) => page));
+  static Future<T?> navigateTo<T>(BuildContext context, Widget page) async {
+    final nav = Navigator.maybeOf(context);
+    if (nav == null) return null;
+    if (!context.mounted) return null;
+    return nav.push<T>(MaterialPageRoute(builder: (_) => page));
   }
 
-  static Future<T?> navigateAndReplace<T>(BuildContext context, Widget page) {
-    return Navigator.of(
-      context,
-    ).pushReplacement<T, T>(MaterialPageRoute(builder: (_) => page));
+  static Future<T?> navigateAndReplace<T>(
+    BuildContext context,
+    Widget page,
+  ) async {
+    final nav = Navigator.maybeOf(context);
+    if (nav == null) return null;
+    if (!context.mounted) return null;
+    return nav.pushReplacement<T, T>(MaterialPageRoute(builder: (_) => page));
   }
 
   static Future<T?> navigateAndRemoveUntil<T>(
     BuildContext context,
     Widget page,
-  ) {
-    return Navigator.of(context).pushAndRemoveUntil<T>(
+  ) async {
+    final nav = Navigator.maybeOf(context);
+    if (nav == null) return null;
+    if (!context.mounted) return null;
+    return nav.pushAndRemoveUntil<T>(
       MaterialPageRoute(builder: (_) => page),
       (route) => false,
     );
   }
 
   static void goBack<T>(BuildContext context, [T? result]) {
-    if (Navigator.of(context).canPop()) {
-      Navigator.of(context).pop<T>(result);
+    final nav = Navigator.maybeOf(context);
+    if (nav == null) return;
+    if (nav.canPop()) {
+      nav.pop<T>(result);
     }
   }
 
   // ───────────────────────── MISC ─────────────────────────
 
-  /// Copy text to clipboard with optional callback.
+  /// Copy text to clipboard with optional callback. Silently ignores failures.
   static Future<void> copyToClipboard(
     String text, {
     VoidCallback? onCopied,
   }) async {
-    await Clipboard.setData(ClipboardData(text: text));
-    onCopied?.call();
+    try {
+      await Clipboard.setData(ClipboardData(text: text));
+      onCopied?.call();
+    } catch (_) {
+      // Some platforms (web/desktop sandbox) may throw — safely ignore
+    }
   }
 
   /// Clamp a value between [min] and [max].
   static num clamp(num value, num min, num max) =>
       math.min(math.max(value, min), max);
+
+  /// Run a function after the current frame (safe for showing dialogs/snacks in initState).
+  static void onNextFrame(VoidCallback fn) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => fn());
+  }
 }
 
 /// Handy extensions so calls read nicely: `context.isDarkMode`, `context.width`, etc.
@@ -210,11 +274,13 @@ extension BuildContextX on BuildContext {
     String message, {
     String? actionLabel,
     VoidCallback? onAction,
+    Duration duration = const Duration(seconds: 3),
   }) => HelperUtils.showSnackBar(
     this,
     message,
     actionLabel: actionLabel,
     onAction: onAction,
+    duration: duration,
   );
 
   Future<bool?> alert({
@@ -223,6 +289,7 @@ extension BuildContextX on BuildContext {
     String confirmText = 'OK',
     String cancelText = 'Cancel',
     bool showCancel = true,
+    bool barrierDismissible = true,
   }) => HelperUtils.showAlert(
     this,
     title: title,
@@ -230,5 +297,8 @@ extension BuildContextX on BuildContext {
     confirmText: confirmText,
     cancelText: cancelText,
     showCancel: showCancel,
+    barrierDismissible: barrierDismissible,
   );
+
+  void unfocusKeyboard() => HelperUtils.unfocus(this);
 }

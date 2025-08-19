@@ -40,45 +40,7 @@ class _HomePageState extends State<HomePage> {
     Category('Books', Icons.menu_book_outlined),
   ];
 
-  final List<String> _brands = [
-    'Nike',
-    'Adidas',
-    'IKEA',
-    'Samsung',
-    'Apple',
-    'Sony',
-  ];
-
   final Set<int> _liked = {};
-
-  final List<ProductsCard> _cart = [];
-  final Set<String> _wishlist = {};
-
-  void _addToCart(ProductsCard p) {
-    setState(() {
-      _cart.add(
-        ProductsCard(
-          id: p.id,
-          title: p.title,
-          imageUrl: p.imageUrl,
-          price: p.price,
-          brand: p.brand,
-          currencySymbol: p.currencySymbol,
-        ),
-      );
-    }); // TODO: show snackbar / call your Cart provider
-  }
-
-  void _toggleWishlist(ProductsCard p) {
-    setState(() {
-      if (_wishlist.contains(p.id)) {
-        _wishlist.remove(p.id);
-      } else {
-        _wishlist.add(p.id);
-      }
-    });
-    // TODO: call your Wishlist provider
-  }
 
   @override
   void initState() {
@@ -333,6 +295,31 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 // Grid
+                SizedBox(
+                  width: double.infinity,
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: 8, // Example item count
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 0.7,
+                    ),
+                    itemBuilder: (_, i) {
+                      return ProductCard(
+                        id: 'product_$i',
+                        title: 'Sport Shoe $i',
+                        imageUrl:
+                            'https://backend.orbitvu.com/sites/default/files/image/sport-shoe-white-background.jpeg',
+                        price: 50,
+                        discountPercent: 50,
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ],
@@ -358,12 +345,4 @@ class circular_fadbox extends StatelessWidget {
       ),
     );
   }
-}
-
-// -------------------- Widgets & Models --------------------
-
-class Category {
-  final String name;
-  final IconData icon;
-  const Category(this.name, this.icon);
 }

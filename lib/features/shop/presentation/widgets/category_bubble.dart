@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
+class Category {
+  final String name;
+  final IconData icon;
+  const Category(this.name, this.icon);
+}
+
 class CategoryBubble extends StatelessWidget {
   const CategoryBubble({
+    super.key,
     required this.label,
     required this.icon,
     required this.bg,

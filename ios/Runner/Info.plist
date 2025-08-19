@@ -47,5 +47,15 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<!-- Lets Flutter’s debug VM service announce itself on the LAN -->
+<key>NSLocalNetworkUsageDescription</key>
+<string>This app needs local network access for debug tools during development.</string>
+
+<key>NSBonjourServices</key>
+<array>
+  <string>_dartobservatory._tcp</string>
+  <string>_dartVmService._tcp</string>
+</array>
+
 	</dict>
 </plist>
