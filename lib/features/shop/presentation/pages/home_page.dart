@@ -335,8 +335,6 @@ class _HomePageState extends State<HomePage> {
                                 images: variants,
                                 title: 'Sport Shoe $i',
                                 brand: 'Nike',
-                                price: 50,
-                                currency: '\$',
                               ),
                             ),
                           );
