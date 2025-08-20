@@ -1,8 +1,10 @@
 import 'package:amazify/features/shop/presentation/pages/cart.dart';
 import 'package:amazify/features/shop/presentation/pages/notifications.dart';
+import 'package:amazify/features/shop/presentation/pages/product_view.dart';
 import 'package:amazify/features/shop/presentation/widgets/badge_button.dart';
 import 'package:amazify/features/shop/presentation/widgets/brand_card.dart';
 import 'package:amazify/features/shop/presentation/widgets/category_bubble.dart';
+import 'package:amazify/features/shop/presentation/widgets/circular_fabox.dart';
 import 'package:amazify/features/shop/presentation/widgets/custom_appbar.dart';
 import 'package:amazify/features/shop/presentation/widgets/dashed_carousal_ind.dart';
 import 'package:amazify/features/shop/presentation/widgets/product_box.dart';
@@ -24,6 +26,15 @@ class _HomePageState extends State<HomePage> {
   int _brandPage = 0;
   final controller = CarouselSliderController(); // v5+ controller
   int current = 0;
+
+  final variants = [
+    'https://backend.orbitvu.com/sites/default/files/image/sport-shoe-white-background.jpeg',
+    'assets/products/p11.jpg',
+    'assets/products/p12.jpg',
+    'assets/products/p13.jpg',
+    'assets/products/p5.png',
+  ];
+
   final List<String> images = [
     'assets/Images/ban1.png',
     'assets/Images/ban2.png',
@@ -295,27 +306,51 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 // Grid
+                // Grid
                 SizedBox(
                   width: double.infinity,
                   child: GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: 8, // Example item count
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 0.7,
-                    ),
-                    itemBuilder: (_, i) {
-                      return ProductCard(
-                        id: 'product_$i',
-                        title: 'Sport Shoe $i',
-                        imageUrl:
-                            'https://backend.orbitvu.com/sites/default/files/image/sport-shoe-white-background.jpeg',
-                        price: 50,
-                        discountPercent: 50,
+                    itemCount: 8,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 0.7,
+                        ),
+                    itemBuilder: (context, i) {
+                      final id = 'product_$i';
+                      final image =
+                          'https://backend.orbitvu.com/sites/default/files/image/sport-shoe-white-background.jpeg';
+
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (ctx) => ProductView(
+                                heroTag: id,
+                                images: variants,
+                                title: 'Sport Shoe $i',
+                                brand: 'Nike',
+                                price: 50,
+                                currency: '\$',
+                              ),
+                            ),
+                          );
+                        },
+                        child: Hero(
+                          tag: id,
+                          child: ProductCard(
+                            id: id,
+                            title: 'Sport Shoe $i',
+                            imageUrl: image,
+                            price: 50,
+                            discountPercent: 50,
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -324,24 +359,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class circular_fadbox extends StatelessWidget {
-  const circular_fadbox({super.key, required this.cs});
-
-  final ColorScheme cs;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 300,
-      height: 300,
-      decoration: BoxDecoration(
-        color: cs.primaryContainer.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(200),
       ),
     );
   }

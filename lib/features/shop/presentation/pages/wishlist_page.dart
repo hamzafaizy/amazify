@@ -1,431 +1,198 @@
 // lib/features/shop/presentation/pages/wishlist.dart
+import 'package:amazify/features/shop/presentation/pages/home_page.dart';
+import 'package:amazify/features/shop/presentation/widgets/custom_appbar.dart';
+import 'package:amazify/features/shop/presentation/widgets/product_box.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
-class WishlistPage extends StatefulWidget {
+class WishlistPage extends StatelessWidget {
   const WishlistPage({super.key});
-
-  @override
-  State<WishlistPage> createState() => _WishlistPageState();
-}
-
-class _WishlistPageState extends State<WishlistPage> {
-  // Mock data — replace with your real models/store
-  final List<_WishProduct> _items = [
-    _WishProduct(
-      id: 'w1',
-      title: 'Wireless Headphones',
-      brand: 'Amazify Audio',
-      imageUrl: 'https://picsum.photos/seed/w1/800/800',
-      price: 4999,
-    ),
-    _WishProduct(
-      id: 'w2',
-      title: 'Smart Watch Pro',
-      brand: 'Amazify Wear',
-      imageUrl: 'https://picsum.photos/seed/w2/800/800',
-      price: 11999,
-    ),
-    _WishProduct(
-      id: 'w3',
-      title: '4K Action Camera',
-      brand: 'Amazify Cam',
-      imageUrl: 'https://picsum.photos/seed/w3/800/800',
-      price: 28999,
-    ),
-  ];
-
-  // Local cart just for demo
-  final List<_WishProduct> _cart = [];
-
-  void _removeAt(int index) {
-    final removed = _items.removeAt(index);
-    setState(() {});
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Removed from wishlist: ${removed.title}')),
-    );
-  }
-
-  void _addToCart(_WishProduct p) {
-    setState(() => _cart.add(p));
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Added to cart: ${p.title}')));
-  }
-
-  void _moveAllToCart() {
-    if (_items.isEmpty) return;
-    setState(() {
-      _cart.addAll(_items);
-      _items.clear();
-    });
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Moved all to cart')));
-  }
-
-  void _clearAll() {
-    if (_items.isEmpty) return;
-    setState(() => _items.clear());
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Wishlist cleared')));
-  }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
 
+    final items = _demoWishlist; // TODO: replace with your real wishlist source
+
+    final width = MediaQuery.sizeOf(context).width;
+    final crossAxisCount = width >= 1100
+        ? 5
+        : width >= 900
+        ? 4
+        : width >= 650
+        ? 3
+        : 2;
+    final aspectRatio = width >= 900 ? 0.82 : 0.74;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Wishlist'),
+      appBar: CustomAppBar(
+        showBackArrow: false,
+        title: Text(
+          'Wishlist',
+          style: text.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+        ),
         actions: [
           IconButton(
-            tooltip: 'Cart',
-            onPressed: () {},
-            icon: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                const Icon(Iconsax.shopping_bag),
-                if (_cart.isNotEmpty)
-                  Positioned(
-                    right: -6,
-                    top: -4,
-                    child: _CountDot(count: _cart.length),
-                  ),
-              ],
-            ),
+            tooltip: 'Go to Home',
+            icon: const Icon(Iconsax.add),
+            onPressed: () {
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const HomePage()));
+            },
           ),
           const SizedBox(width: 4),
         ],
       ),
-      body: _items.isEmpty
-          ? _EmptyWishlist(
+
+      body: items.isEmpty
+          ? _EmptyState(
               onBrowse: () {
-                // Navigate to store or home
-                Navigator.maybePop(context);
-              },
-            )
-          : ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
-              itemCount: _items.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final p = _items[index];
-                return Dismissible(
-                  key: ValueKey(p.id),
-                  direction: DismissDirection.endToStart,
-                  background: _DismissBg(color: cs.error),
-                  onDismissed: (_) => _removeAt(index),
-                  child: _WishItemTile(
-                    product: p,
-                    onAdd: () => _addToCart(p),
-                    onRemove: () => _removeAt(index),
-                  ),
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const HomePage()),
+                  (_) => false,
                 );
               },
-            ),
-      bottomNavigationBar: _items.isEmpty
-          ? null
-          : SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        icon: const Icon(Icons.cleaning_services_outlined),
-                        label: const Text('Clear'),
-                        onPressed: _clearAll,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: FilledButton.icon(
-                        icon: const Icon(Iconsax.shopping_bag),
-                        label: const Text('Move all to cart'),
-                        onPressed: _moveAllToCart,
-                      ),
-                    ),
-                  ],
+            )
+          : Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+              child: GridView.builder(
+                itemCount: items.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: aspectRatio,
                 ),
+                itemBuilder: (context, i) {
+                  final p = items[i];
+                  return ProductCard(
+                    id: p.id,
+                    title: p.title,
+                    imageUrl: p.imageUrl,
+                    price: p.price,
+                    discountPercent: p.discountPercent,
+                    brand: p.brand,
+                    currencySymbol: '₨',
+                    initialFavorite: true,
+                    onTap: () {
+                      // TODO: navigate to product details
+                    },
+                    onAdd: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('${p.title} added to cart')),
+                      );
+                    },
+                    onFavoriteChanged: (fav) {
+                      // TODO: update wishlist state
+                    },
+                  );
+                },
               ),
             ),
+      backgroundColor: cs.surface,
     );
   }
 }
 
-// ────────────── Widgets ──────────────
+/// ───────────────────────── Demo data (replace with real state) ─────────────────────────
 
-class _WishItemTile extends StatelessWidget {
-  const _WishItemTile({
-    required this.product,
-    required this.onAdd,
-    required this.onRemove,
+class WishlistItem {
+  final String id, title, imageUrl, brand;
+  final double price;
+  final int discountPercent;
+  const WishlistItem({
+    required this.id,
+    required this.title,
+    required this.imageUrl,
+    required this.price,
+    required this.discountPercent,
+    this.brand = '',
   });
-
-  final _WishProduct product;
-  final VoidCallback onAdd;
-  final VoidCallback onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
-
-    return Material(
-      color: cs.surface,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: cs.outlineVariant.withOpacity(.35)),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () {}, // TODO: open product details
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              // Image
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Image.network(
-                    product.imageUrl,
-                    width: 84,
-                    height: 84,
-                    fit: BoxFit.cover,
-                    // ...
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 12),
-
-              // Title, brand, price
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Title
-                    Text(
-                      product.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: text.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    // Brand + blue tick
-                    if ((product.brand ?? '').isNotEmpty)
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              product.brand!,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: text.labelMedium?.copyWith(
-                                color: cs.onSurfaceVariant,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          const Icon(
-                            Icons.verified,
-                            size: 16,
-                            color: Colors.blue,
-                          ),
-                        ],
-                      ),
-                    const SizedBox(height: 10),
-                    // Price
-                    Text(
-                      _fmt(product.price, '₨'),
-                      style: text.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(width: 12),
-
-              // Actions column
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Red heart to remove
-                  Material(
-                    color: cs.surfaceContainerHighest.withOpacity(.8),
-                    shape: const CircleBorder(),
-                    child: InkWell(
-                      customBorder: const CircleBorder(),
-                      onTap: onRemove,
-                      child: const Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(
-                          Icons.favorite,
-                          color: Colors.red,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  // Plus button with TL & BR rounded
-                  SizedBox(
-                    height: 38,
-                    width: 56,
-                    child: TextButton(
-                      onPressed: onAdd,
-                      style: TextButton.styleFrom(
-                        backgroundColor: cs.primary,
-                        foregroundColor: cs.onPrimary,
-                        padding: EdgeInsets.zero,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(14),
-                            bottomRight: Radius.circular(14),
-                          ),
-                        ),
-                      ),
-                      child: const Text(
-                        '+',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w900,
-                          height: 1,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
-class _EmptyWishlist extends StatelessWidget {
-  const _EmptyWishlist({required this.onBrowse});
+const _demoWishlist = <WishlistItem>[
+  WishlistItem(
+    id: '1',
+    title: 'Nike Air Zoom',
+    imageUrl: 'https://picsum.photos/seed/airzoom/600/600',
+    price: 18999,
+    discountPercent: 20,
+    brand: 'Nike',
+  ),
+  WishlistItem(
+    id: '2',
+    title: 'Adidas Ultraboost',
+    imageUrl: 'https://picsum.photos/seed/ultra/600/600',
+    price: 21999,
+    discountPercent: 15,
+    brand: 'Adidas',
+  ),
+  WishlistItem(
+    id: '3',
+    title: 'Sony WH-1000XM4',
+    imageUrl: 'https://picsum.photos/seed/sony/600/600',
+    price: 79999,
+    discountPercent: 10,
+    brand: 'Sony',
+  ),
+  WishlistItem(
+    id: '4',
+    title: 'IKEA Markus Chair',
+    imageUrl: 'https://picsum.photos/seed/markus/600/600',
+    price: 59999,
+    discountPercent: 25,
+    brand: 'IKEA',
+  ),
+  WishlistItem(
+    id: '5',
+    title: 'Puma Running Tee',
+    imageUrl: 'https://picsum.photos/seed/puma/600/600',
+    price: 3499,
+    discountPercent: 30,
+    brand: 'Puma',
+  ),
+  WishlistItem(
+    id: '6',
+    title: 'Logitech MX Master 3S',
+    imageUrl: 'https://picsum.photos/seed/mx/600/600',
+    price: 24999,
+    discountPercent: 12,
+    brand: 'Logitech',
+  ),
+];
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.onBrowse});
   final VoidCallback onBrowse;
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
-
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Iconsax.heart, size: 64, color: cs.onSurfaceVariant),
-            const SizedBox(height: 16),
-            Text(
-              'Your wishlist is empty',
-              style: text.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-            ),
+            const Icon(Iconsax.heart, size: 56),
+            const SizedBox(height: 12),
+            Text('Your wishlist is empty', style: text.titleMedium),
             const SizedBox(height: 6),
             Text(
-              'Save items you love and we’ll keep them here for you.',
-              style: text.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+              'Save items you love and find them here later.',
+              style: text.bodyMedium,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             FilledButton(
               onPressed: onBrowse,
-              child: const Text('Browse the Store'),
+              child: const Text('Browse products'),
             ),
           ],
         ),
       ),
     );
   }
-}
-
-class _DismissBg extends StatelessWidget {
-  const _DismissBg({required this.color});
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.centerRight,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: const Icon(Icons.delete_outline, color: Colors.white),
-    );
-  }
-}
-
-// Small badge for counts (used on AppBar icon)
-class _CountDot extends StatelessWidget {
-  const _CountDot({required this.count});
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-      decoration: BoxDecoration(
-        color: cs.primary,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text(
-        count > 99 ? '99+' : '$count',
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: cs.onPrimary,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-    );
-  }
-}
-
-// ────────────── Models & utils ──────────────
-
-class _WishProduct {
-  final String id;
-  final String title;
-  final String? brand;
-  final String imageUrl;
-  final double price;
-
-  _WishProduct({
-    required this.id,
-    required this.title,
-    required this.imageUrl,
-    required this.price,
-    this.brand,
-  });
-}
-
-String _fmt(double v, String symbol) {
-  final s = v.toStringAsFixed(v.truncateToDouble() == v ? 0 : 2);
-  final parts = s.split('.');
-  final whole = parts[0];
-  final frac = parts.length > 1 ? '.${parts[1]}' : '';
-  final buf = StringBuffer();
-  for (int i = 0; i < whole.length; i++) {
-    final pos = whole.length - i;
-    buf.write(whole[i]);
-    if (pos > 1 && pos % 3 == 1) buf.write(',');
-  }
-  return '$symbol${buf.toString()}$frac';
 }

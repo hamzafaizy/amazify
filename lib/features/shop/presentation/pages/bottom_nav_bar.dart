@@ -21,15 +21,9 @@ class _RootNavState extends State<RootNav> {
     // Your 4 tab pages
     final pages = [
       HomePage(), // HomePage()
-      Center(
-        child: Container(child: Text('store')),
-      ), //StorePage(), // StorePage()
-      Center(
-        child: Container(child: Text('wishlist')),
-      ), //WishlistPage(), // WishlistPage()
-      Center(
-        child: Container(child: Text('profile')),
-      ), //ProfilePage(), // ProfilePage()
+      StorePage(), // StorePage()
+      WishlistPage(), // WishlistPage()
+      ProfilePage(), // ProfilePage()
     ];
 
     return Scaffold(

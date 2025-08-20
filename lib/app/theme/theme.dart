@@ -23,7 +23,7 @@ class AppTheme {
     tertiary: Colors.blueGrey,
     surface: Colors.white,
     error: Colors.red,
-    onPrimary: Colors.white,
+    onPrimary: Colors.white70,
     onSecondary: Colors.white,
     onTertiary: Colors.white,
     onSurface: Colors.black87,

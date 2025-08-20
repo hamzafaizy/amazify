@@ -132,21 +132,28 @@ class _ProductCardState extends State<ProductCard> {
 
                     // Brand + blue tick (subtitle)
                     if ((widget.brand ?? '').isNotEmpty)
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              widget.brand!,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: text.labelMedium?.copyWith(
-                                color: cs.tertiary,
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: 10,
+                          left: 10,
+                          right: 10,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                widget.brand!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: text.labelMedium?.copyWith(
+                                  color: cs.tertiary,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 6),
-                          Icon(Icons.verified, size: 16, color: Colors.blue),
-                        ],
+                            const SizedBox(width: 6),
+                            Icon(Icons.verified, size: 16, color: Colors.blue),
+                          ],
+                        ),
                       ),
 
                     const SizedBox(height: 10),

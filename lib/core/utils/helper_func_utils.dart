@@ -116,7 +116,6 @@ class HelperUtils {
   /// Unfocus keyboard safely.
   static void unfocus(BuildContext context) {
     final scope = FocusScope.of(context);
-    if (scope == null) return;
     if (!scope.hasPrimaryFocus && scope.hasFocus) {
       scope.unfocus();
     }

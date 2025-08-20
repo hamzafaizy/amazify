@@ -51,31 +51,34 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       return null;
     }
 
-    return AppBar(
-      automaticallyImplyLeading: false,
-      centerTitle: false,
-      titleSpacing: 0, // make the title start from the very beginning
-      title: title,
-      leading: buildLeading(),
-      actions: actions,
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, right: 10, bottom: 10),
+      child: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: false,
+        titleSpacing: 0, // make the title start from the very beginning
+        title: title,
+        leading: buildLeading(),
+        actions: actions,
 
-      // Background & elevation
-      backgroundColor: backgroundColor,
-      elevation: isTransparentBg ? 0 : (elevation ?? 0),
-      scrolledUnderElevation: 0,
-      shadowColor: isTransparentBg ? Colors.transparent : null,
-      surfaceTintColor: Colors
-          .transparent, // remove Material 3 overlay/tint (fixes "slight color" box)
-      // Keep text/icon colors consistent
-      foregroundColor: theme.colorScheme.onSurface,
-      iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
+        // Background & elevation
+        backgroundColor: backgroundColor,
+        elevation: isTransparentBg ? 0 : (elevation ?? 0),
+        scrolledUnderElevation: 0,
+        shadowColor: isTransparentBg ? Colors.transparent : null,
+        surfaceTintColor: Colors
+            .transparent, // remove Material 3 overlay/tint (fixes "slight color" box)
+        // Keep text/icon colors consistent
+        foregroundColor: theme.colorScheme.onSurface,
+        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
 
-      // (Optional) status bar icons adapt to theme background
-      systemOverlayStyle: isTransparentBg
-          ? SystemUiOverlayStyle.light.copyWith(
-              statusBarColor: Colors.transparent,
-            )
-          : null,
+        // (Optional) status bar icons adapt to theme background
+        systemOverlayStyle: isTransparentBg
+            ? SystemUiOverlayStyle.light.copyWith(
+                statusBarColor: Colors.transparent,
+              )
+            : null,
+      ),
     );
   }
 }

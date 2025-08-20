@@ -1,420 +1,504 @@
-// lib/features/shop/presentation/pages/store_page.dart
+import 'package:amazify/features/shop/presentation/widgets/badge_button.dart';
+import 'package:amazify/features/shop/presentation/widgets/custom_appbar.dart';
 import 'package:amazify/features/shop/presentation/widgets/product_box.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
-class StorePage extends StatefulWidget {
+class StorePage extends StatelessWidget {
   const StorePage({super.key});
-
-  @override
-  State<StorePage> createState() => _StorePageState();
-}
-
-class _StorePageState extends State<StorePage> {
-  // ─────────────────────────── Mock data (swap with your repo/API) ───────────────────────────
-  final List<_Product> _all = [
-    _Product(
-      id: 'p1',
-      title: 'Wireless Headphones',
-      brand: 'Amazify Audio',
-      imageUrl: 'https://picsum.photos/seed/p1/800/800',
-      price: 4999,
-      discount: 78,
-      popularity: 98,
-      createdAt: DateTime(2025, 8, 10),
-    ),
-    _Product(
-      id: 'p2',
-      title: 'Smart Watch Pro',
-      brand: 'Amazify Wear',
-      imageUrl: 'https://picsum.photos/seed/p2/800/800',
-      price: 11999,
-      discount: 35,
-      popularity: 92,
-      createdAt: DateTime(2025, 8, 14),
-    ),
-    _Product(
-      id: 'p3',
-      title: '4K Action Camera',
-      brand: 'Amazify Cam',
-      imageUrl: 'https://picsum.photos/seed/p3/800/800',
-      price: 28999,
-      discount: 22,
-      popularity: 77,
-      createdAt: DateTime(2025, 8, 6),
-    ),
-    _Product(
-      id: 'p4',
-      title: 'Ergo Office Chair',
-      brand: 'Amazify Home',
-      imageUrl: 'https://picsum.photos/seed/p4/800/800',
-      price: 17999,
-      discount: 40,
-      popularity: 81,
-      createdAt: DateTime(2025, 8, 12),
-    ),
-    _Product(
-      id: 'p5',
-      title: 'Performance Sneakers',
-      brand: 'Amazify Fit',
-      imageUrl: 'https://picsum.photos/seed/p5/800/800',
-      price: 7999,
-      discount: 50,
-      popularity: 88,
-      createdAt: DateTime(2025, 8, 16),
-    ),
-  ];
-
-  // ─────────────────────────── UI State ───────────────────────────
-  final _searchCtrl = TextEditingController();
-  String _query = '';
-  String? _category; // using brand as category for demo
-  SortOption _sort = SortOption.popular;
-
-  final List<_Product> _cart = [];
-  final Set<String> _wishlist = {};
-
-  @override
-  void dispose() {
-    _searchCtrl.dispose();
-    super.dispose();
-  }
-
-  // Derived list after search/category/sort
-  List<_Product> get _filteredSorted {
-    Iterable<_Product> list = _all;
-
-    if (_query.isNotEmpty) {
-      final q = _query.toLowerCase();
-      list = list.where(
-        (p) =>
-            p.title.toLowerCase().contains(q) ||
-            (p.brand?.toLowerCase().contains(q) ?? false),
-      );
-    }
-
-    if (_category != null && _category!.isNotEmpty) {
-      list = list.where((p) => (p.brand ?? '') == _category);
-    }
-
-    final items = list.toList();
-    switch (_sort) {
-      case SortOption.popular:
-        items.sort((a, b) => b.popularity.compareTo(a.popularity));
-        break;
-      case SortOption.priceLowHigh:
-        items.sort((a, b) => a.price.compareTo(b.price));
-        break;
-      case SortOption.priceHighLow:
-        items.sort((a, b) => b.price.compareTo(a.price));
-        break;
-      case SortOption.newest:
-        items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        break;
-    }
-    return items;
-  }
-
-  List<String> get _categories => _all
-      .map((p) => p.brand ?? '')
-      .where((b) => b.isNotEmpty)
-      .toSet()
-      .toList();
-
-  // ─────────────────────────── Actions ───────────────────────────
-  void _addToCart(_Product p) {
-    setState(() => _cart.add(p));
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Added to cart: ${p.title}')));
-  }
-
-  void _toggleWishlist(_Product p) {
-    setState(() {
-      if (_wishlist.contains(p.id)) {
-        _wishlist.remove(p.id);
-      } else {
-        _wishlist.add(p.id);
-      }
-    });
-  }
-
-  void _openSortSheet() async {
-    final choice = await showModalBottomSheet<SortOption>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) => _SortSheet(current: _sort),
-    );
-    if (choice != null) {
-      setState(() => _sort = choice);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
-    final items = _filteredSorted;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Store'),
-        actions: [
-          IconButton(
-            tooltip: 'Wishlist',
-            onPressed: () {},
-            icon: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                const Icon(Iconsax.heart),
-                if (_wishlist.isNotEmpty)
-                  Positioned(
-                    right: -6,
-                    top: -4,
-                    child: _CountDot(count: _wishlist.length),
-                  ),
-              ],
-            ),
-          ),
-          IconButton(
-            tooltip: 'Cart',
-            onPressed: () {},
-            icon: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                const Icon(Iconsax.shopping_bag),
-                if (_cart.isNotEmpty)
-                  Positioned(
-                    right: -6,
-                    top: -4,
-                    child: _CountDot(count: _cart.length),
-                  ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 4),
-        ],
-      ),
-      body: CustomScrollView(
-        slivers: [
-          // Search
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: TextField(
-                controller: _searchCtrl,
-                onChanged: (v) => setState(() => _query = v.trim()),
-                decoration: InputDecoration(
-                  hintText: 'Search for Store',
-                  prefixIcon: const Icon(Iconsax.search_normal),
-                  filled: true,
-                  fillColor: cs.surfaceContainerHighest.withOpacity(.3),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide(
-                      color: cs.outlineVariant.withOpacity(.3),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide(
-                      color: cs.outlineVariant.withOpacity(.3),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Category chips
-          if (_categories.isNotEmpty)
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 44,
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (_, i) {
-                    final c = _categories[i];
-                    final selected = c == _category;
-                    return ChoiceChip(
-                      label: Text(c),
-                      selected: selected,
-                      onSelected: (_) => setState(() {
-                        _category = selected ? null : c;
-                      }),
-                    );
-                  },
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
-                  itemCount: _categories.length,
-                ),
-              ),
-            ),
-
-          // Sort row
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: Row(
+      body: Stack(
+        children: [
+          // ───────────── Top content ─────────────
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.only(bottom: 120),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Text(
-                      '${items.length} items',
-                      style: text.labelLarge?.copyWith(
-                        color: cs.onSurfaceVariant,
+                  // AppBar
+                  Padding(
+                    padding: const EdgeInsets.all(0),
+                    child: CustomAppBar(
+                      title: Text(
+                        'Store',
+                        style: text.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: cs.onSurface,
+                        ),
                       ),
+                      showBackArrow: false,
+                      backgroundColor: Colors.transparent,
+                      actions: [
+                        BadgeIconButton(
+                          icon: Iconsax.heart,
+                          count: 3,
+                          iconColor: cs.onSurface.withOpacity(0.9),
+                          badgeColor: cs.error.withOpacity(0.9),
+                          onPressed: () {},
+                        ),
+                        BadgeIconButton(
+                          icon: Iconsax.shopping_bag,
+                          count: 12,
+                          iconColor: cs.onSurface.withOpacity(0.9),
+                          badgeColor: cs.error.withOpacity(0.9),
+                          onPressed: () {},
+                        ),
+                      ],
                     ),
                   ),
-                  TextButton.icon(
-                    onPressed: _openSortSheet,
-                    icon: const Icon(Iconsax.sort),
-                    label: Text(_sort.label),
-                  ),
-                  if (_query.isNotEmpty || _category != null)
-                    TextButton(
-                      onPressed: () => setState(() {
-                        _query = '';
-                        _searchCtrl.clear();
-                        _category = null;
-                        _sort = SortOption.popular;
-                      }),
-                      child: const Text('Clear'),
+
+                  // Search
+                  const SizedBox(height: 16),
+                  const _SearchBar(),
+
+                  // Featured Brands
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Featured Brands',
+                          style: text.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const Spacer(),
+                        TextButton(
+                          onPressed: () {},
+                          child: const Text('View all'),
+                        ),
+                      ],
                     ),
+                  ),
+                  const SizedBox(height: 8),
+                  const _FeaturedBrandGrid(
+                    items: [
+                      _BrandInfo('Nike', '265 products'),
+                      _BrandInfo('Adidas', '241 products'),
+                      _BrandInfo('Puma', '118 products'),
+                      _BrandInfo('Reebok', '87 products'),
+                    ],
+                  ),
                 ],
               ),
             ),
           ),
 
-          // Grid of products
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-            sliver: SliverGrid.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.58,
-              ),
-              itemCount: items.length,
-              itemBuilder: (context, i) {
-                final p = items[i];
-                return ProductCard(
-                  id: p.id,
-                  title: p.title,
-                  brand: p.brand,
-                  imageUrl: p.imageUrl,
-                  price: p.price,
-                  discountPercent: p.discount,
-                  currencySymbol: '₨',
-                  initialFavorite: _wishlist.contains(p.id),
-                  onTap: () {
-                    // TODO: navigate to product details
-                  },
-                  onAdd: () => _addToCart(p),
-                  onFavoriteChanged: (_) => _toggleWishlist(p),
-                );
-              },
-            ),
-          ),
+          // ───────────── Bottom sheet (tabs + content) ─────────────
+          const _BottomShelf(collapsedChildSize: 0.22),
         ],
       ),
     );
   }
 }
 
-// ─────────────────────────── Helpers / Models ───────────────────────────
+// ────────────────────────── Simple widgets ──────────────────────────
 
-enum SortOption { popular, priceLowHigh, priceHighLow, newest }
-
-extension on SortOption {
-  String get label {
-    switch (this) {
-      case SortOption.popular:
-        return 'Popular';
-      case SortOption.priceLowHigh:
-        return 'Price: Low–High';
-      case SortOption.priceHighLow:
-        return 'Price: High–Low';
-      case SortOption.newest:
-        return 'Newest';
-    }
-  }
-}
-
-class _SortSheet extends StatelessWidget {
-  const _SortSheet({required this.current});
-  final SortOption current;
-
-  @override
-  Widget build(BuildContext context) {
-    final options = SortOption.values;
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final o in options)
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Radio<SortOption>(
-                  value: o,
-                  groupValue: current,
-                  onChanged: (_) => Navigator.pop(context, o),
-                ),
-                title: Text(o.label),
-                onTap: () => Navigator.pop(context, o),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Product {
-  final String id;
-  final String title;
-  final String? brand;
-  final String imageUrl;
-  final double price;
-  final int discount; // %
-  final int popularity; // 0..100
-  final DateTime createdAt;
-
-  _Product({
-    required this.id,
-    required this.title,
-    required this.imageUrl,
-    required this.price,
-    required this.discount,
-    required this.popularity,
-    required this.createdAt,
-    this.brand,
-  });
-}
-
-// A tiny badge used on app bar icons
-class _CountDot extends StatelessWidget {
-  const _CountDot({required this.count});
-  final int count;
+class _SearchBar extends StatelessWidget {
+  const _SearchBar();
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-      decoration: BoxDecoration(
-        color: cs.primary,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text(
-        count > 99 ? '99+' : '$count',
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: cs.onPrimary,
-          fontWeight: FontWeight.w800,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: 'Search products or brands',
+          prefixIcon: const Icon(Icons.search),
+          filled: true,
+          fillColor: cs.surfaceContainerHighest.withOpacity(0.3),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: cs.outlineVariant),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: cs.outlineVariant.withOpacity(0.6)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: cs.primary, width: 1.5),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 12,
+          ),
         ),
       ),
     );
   }
+}
+
+class _BrandInfo {
+  final String name;
+  final String subtitle;
+  const _BrandInfo(this.name, this.subtitle);
+}
+
+class _FeaturedBrandGrid extends StatelessWidget {
+  const _FeaturedBrandGrid({required this.items});
+  final List<_BrandInfo> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: items.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisExtent: 84,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+        ),
+        itemBuilder: (context, i) {
+          final cs = Theme.of(context).colorScheme;
+          final text = Theme.of(context).textTheme;
+          final item = items[i];
+          return Container(
+            decoration: BoxDecoration(
+              color: cs.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: cs.outlineVariant.withOpacity(0.5)),
+            ),
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 22,
+                  backgroundColor: cs.primaryContainer.withOpacity(0.4),
+                  child: Text(
+                    item.name[0],
+                    style: text.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              item.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: text.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          Icon(Icons.verified, size: 16, color: cs.primary),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        item.subtitle,
+                        style: text.bodySmall?.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// ────────────────────────── Bottom shelf ──────────────────────────
+
+class _BottomShelf extends StatelessWidget {
+  const _BottomShelf({required this.collapsedChildSize});
+  final double collapsedChildSize;
+
+  static const _categories = <String>[
+    'Sports',
+    'Furniture',
+    'Electronics',
+    'Fashion',
+    'Beauty',
+    'Toys',
+    'Books',
+  ];
+
+  static const _thumbs = [
+    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+    'https://images.unsplash.com/photo-1523381294911-8d3cead13475?w=400',
+    'https://images.unsplash.com/photo-1519741497674-611481863552?w=400',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    _BrandHighlightPair pairFor(String c) {
+      switch (c) {
+        case 'Sports':
+          return const _BrandHighlightPair('Nike', 'Adidas');
+        case 'Furniture':
+          return const _BrandHighlightPair('IKEA', 'Wayfair');
+        case 'Electronics':
+          return const _BrandHighlightPair('Samsung', 'Sony');
+        case 'Fashion':
+          return const _BrandHighlightPair('Zara', 'H&M');
+        case 'Beauty':
+          return const _BrandHighlightPair('L’Oréal', 'Sephora');
+        case 'Toys':
+          return const _BrandHighlightPair('LEGO', 'Mattel');
+        case 'Books':
+          return const _BrandHighlightPair('Penguin', 'HarperCollins');
+        default:
+          return const _BrandHighlightPair('Brand A', 'Brand B');
+      }
+    }
+
+    return DraggableScrollableSheet(
+      initialChildSize: collapsedChildSize,
+      minChildSize: collapsedChildSize,
+      maxChildSize: 0.98,
+      snap: true,
+      builder: (context, scrollController) {
+        return Material(
+          color: cs.surface,
+          elevation: 16,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          child: DefaultTabController(
+            length: _categories.length,
+            child: Column(
+              children: [
+                const SizedBox(height: 8),
+                Container(
+                  width: 40,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: cs.outlineVariant,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                // Tabs
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: TabBar(
+                      isScrollable: true,
+                      dividerHeight: 0,
+                      indicatorSize: TabBarIndicatorSize.label,
+                      labelColor: cs.primary,
+                      unselectedLabelColor: cs.onSurfaceVariant,
+                      indicator: BoxDecoration(
+                        color: cs.primary.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(color: cs.primary),
+                      ),
+                      tabs: [
+                        for (final c in _categories)
+                          Tab(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              child: Text(c),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // Content per tab
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      for (final c in _categories)
+                        _CategoryBody(
+                          scrollController: scrollController,
+                          aName: pairFor(c).a,
+                          bName: pairFor(c).b,
+                          aSub: 'Top picks • $c',
+                          bSub: 'Trending • $c',
+                          thumbs: _thumbs,
+                          productCount: 8,
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _CategoryBody extends StatelessWidget {
+  const _CategoryBody({
+    required this.scrollController,
+    required this.aName,
+    required this.bName,
+    required this.aSub,
+    required this.bSub,
+    required this.thumbs,
+    required this.productCount,
+  });
+
+  final ScrollController scrollController;
+  final String aName, bName, aSub, bSub;
+  final List<String> thumbs;
+  final int productCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+
+    Widget brandCard(String name, String sub) {
+      final cs = Theme.of(context).colorScheme;
+      return Container(
+        decoration: BoxDecoration(
+          color: cs.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: cs.outlineVariant.withOpacity(0.5)),
+        ),
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 22,
+                  backgroundColor: cs.primaryContainer.withOpacity(0.4),
+                  child: Text(
+                    name[0],
+                    style: text.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              name,
+                              overflow: TextOverflow.ellipsis,
+                              style: text.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                          Icon(Icons.verified, size: 18, color: cs.primary),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        sub,
+                        style: text.bodySmall?.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                for (int i = 0; i < 3; i++)
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: i < 2 ? 8 : 0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: AspectRatio(
+                          aspectRatio: 1.25,
+                          child: Image.network(thumbs[i], fit: BoxFit.cover),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView(
+      controller: scrollController,
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      children: [
+        brandCard(aName, aSub),
+        const SizedBox(height: 12),
+        brandCard(bName, bSub),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Text(
+              'You might like',
+              style: text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const Spacer(),
+            TextButton(onPressed: () {}, child: const Text('View all')),
+          ],
+        ),
+        const SizedBox(height: 8),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: productCount,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 0.70,
+          ),
+          itemBuilder: (_, i) => ProductCard(
+            id: 'prod_$i',
+            title: 'Item ${i + 1}',
+            imageUrl:
+                'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400',
+            price: 49.99 + i * 5,
+            discountPercent: i.isEven ? 20 : 0,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// tiny helper for brand pair labels (no extra map clutter)
+class _BrandHighlightPair {
+  final String a, b;
+  const _BrandHighlightPair(this.a, this.b);
 }
