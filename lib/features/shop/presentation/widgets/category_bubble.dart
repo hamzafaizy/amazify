@@ -13,12 +13,14 @@ class CategoryBubble extends StatelessWidget {
     required this.icon,
     required this.bg,
     required this.fg,
+    this.onTap,
   });
 
   final String label;
   final IconData icon;
   final Color bg;
   final Color fg;
+  final VoidCallback? onTap; // <— added
 
   @override
   Widget build(BuildContext context) {
@@ -29,17 +31,17 @@ class CategoryBubble extends StatelessWidget {
           shape: const CircleBorder(),
           child: InkWell(
             customBorder: const CircleBorder(),
-            onTap: () {},
+            onTap: onTap, // <— use the callback
             child: SizedBox(
-              width: 62,
-              height: 62,
+              width: 50,
+              height: 50,
               child: Icon(icon, color: fg),
             ),
           ),
         ),
         const SizedBox(height: 6),
         SizedBox(
-          width: 74,
+          width: 62,
           child: Text(
             label,
             textAlign: TextAlign.center,

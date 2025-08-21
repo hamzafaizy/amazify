@@ -1,11 +1,14 @@
+import 'package:amazify/features/shop/presentation/pages/brand.dart';
 import 'package:amazify/features/shop/presentation/widgets/badge_button.dart';
 import 'package:amazify/features/shop/presentation/widgets/custom_appbar.dart';
 import 'package:amazify/features/shop/presentation/widgets/product_box.dart';
+import 'package:amazify/features/shop/presentation/widgets/custombrandcard.dart'
+    as brand; // <-- single source of truth
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
 class StorePage extends StatelessWidget {
-  const StorePage({super.key});
+  StorePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -72,20 +75,30 @@ class StorePage extends StatelessWidget {
                         ),
                         const Spacer(),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const BrandPage(),
+                              ),
+                            );
+                          },
                           child: const Text('View all'),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const _FeaturedBrandGrid(
-                    items: [
-                      _BrandInfo('Nike', '265 products'),
-                      _BrandInfo('Adidas', '241 products'),
-                      _BrandInfo('Puma', '118 products'),
-                      _BrandInfo('Reebok', '87 products'),
-                    ],
+
+                  // Grid (uses brand.BrandInfo / brand.BrandVisual / brand.FeaturedBrandGrid)
+                  brand.FeaturedBrandGrid(
+                    items: _brands,
+                    visuals: _visuals,
+                    onItemTap: (i, info) {
+                      // Navigate to brand page
+                      // e.g., Navigator.push(context, MaterialPageRoute(builder: (_) => BrandPage(name: info.name)));
+                      debugPrint('Tapped ${info.name}');
+                    },
                   ),
                 ],
               ),
@@ -133,93 +146,6 @@ class _SearchBar extends StatelessWidget {
             vertical: 12,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _BrandInfo {
-  final String name;
-  final String subtitle;
-  const _BrandInfo(this.name, this.subtitle);
-}
-
-class _FeaturedBrandGrid extends StatelessWidget {
-  const _FeaturedBrandGrid({required this.items});
-  final List<_BrandInfo> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: items.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisExtent: 84,
-          mainAxisSpacing: 10,
-          crossAxisSpacing: 10,
-        ),
-        itemBuilder: (context, i) {
-          final cs = Theme.of(context).colorScheme;
-          final text = Theme.of(context).textTheme;
-          final item = items[i];
-          return Container(
-            decoration: BoxDecoration(
-              color: cs.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: cs.outlineVariant.withOpacity(0.5)),
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 22,
-                  backgroundColor: cs.primaryContainer.withOpacity(0.4),
-                  child: Text(
-                    item.name[0],
-                    style: text.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              item.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: text.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          Icon(Icons.verified, size: 16, color: cs.primary),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        item.subtitle,
-                        style: text.bodySmall?.copyWith(
-                          color: cs.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
       ),
     );
   }
@@ -502,3 +428,21 @@ class _BrandHighlightPair {
   final String a, b;
   const _BrandHighlightPair(this.a, this.b);
 }
+
+// ───────────── Sample data for FeaturedBrandGrid ─────────────
+final _brands = <brand.BrandInfo>[
+  const brand.BrandInfo('Nike', 'Run, train, and live in motion'),
+  const brand.BrandInfo('Apple', 'Think different. Upgrade daily life.'),
+  const brand.BrandInfo('Zara', 'Fast fashion, fresh looks'),
+  const brand.BrandInfo('Acer', 'Laptops, gaming, and more'),
+];
+
+final _visuals = <brand.BrandVisual>[
+  const brand.BrandVisual(imagePath: 'assets/brands/nike.png', verified: true),
+  const brand.BrandVisual(
+    imagePath: 'https://example.com/apple_logo.png',
+    verified: true,
+  ),
+  const brand.BrandVisual(imagePath: 'assets/brands/zara.png'),
+  const brand.BrandVisual(imagePath: 'https://example.com/acer.png'),
+];

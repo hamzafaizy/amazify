@@ -1,4 +1,5 @@
 // lib/features/shop/presentation/pages/product_view.dart
+import 'package:amazify/features/shop/presentation/pages/ratings.dart';
 import 'package:amazify/features/shop/presentation/widgets/variation_card_prod_view.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -473,18 +474,22 @@ class _ProductViewState extends State<ProductView>
                   ),
                   const SizedBox(height: 8),
                   const Divider(),
-                  const SizedBox(height: 8),
 
                   // reviews row
-                  Row(
-                    children: [
-                      Text(
-                        'Reviews (${widget.reviews})',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const Spacer(),
-                      const Icon(Iconsax.arrow_right_3),
-                    ],
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ReviewsPage()),
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        const Text("Reviews (200)"),
+                        const Spacer(),
+                        const Icon(Iconsax.arrow_right_3),
+                      ],
+                    ),
                   ),
                 ],
               ),

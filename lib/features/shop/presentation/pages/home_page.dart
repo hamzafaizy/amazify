@@ -1,6 +1,8 @@
 import 'package:amazify/features/shop/presentation/pages/cart.dart';
 import 'package:amazify/features/shop/presentation/pages/notifications.dart';
 import 'package:amazify/features/shop/presentation/pages/product_view.dart';
+import 'package:amazify/features/shop/presentation/pages/sports_home.dart';
+import 'package:amazify/features/shop/presentation/pages/view_all_home.dart';
 import 'package:amazify/features/shop/presentation/widgets/badge_button.dart';
 import 'package:amazify/features/shop/presentation/widgets/brand_card.dart';
 import 'package:amazify/features/shop/presentation/widgets/category_bubble.dart';
@@ -43,12 +45,15 @@ class _HomePageState extends State<HomePage> {
     'assets/Images/ban5.png',
   ];
   final List<Category> _categories = const [
-    Category('Sports', Icons.sports_soccer),
-    Category('Furniture', Icons.chair_outlined),
+    Category('Shop', Iconsax.shop),
+    Category('Electcity', Iconsax.electricity),
     Category('Electro', Icons.devices_other),
     Category('Clothes', Icons.checkroom_outlined),
     Category('Beauty', Icons.brush_outlined),
     Category('Books', Icons.menu_book_outlined),
+    Category('Phones', Iconsax.mobile),
+    Category('Time', Iconsax.clock),
+    Category('Service', Iconsax.profile),
   ];
 
   final Set<int> _liked = {};
@@ -173,12 +178,12 @@ class _HomePageState extends State<HomePage> {
                               ],
                             ),
 
-                            const SizedBox(height: 14),
+                            const SizedBox(height: 4),
 
                             /////////// Search bar /////////
                             Center(
                               child: SizedBox(
-                                width: 400,
+                                width: 350,
                                 child: customSearchBar(
                                   hint: "Search for Store",
                                   fillColor: Colors.white.withOpacity(0.12),
@@ -188,7 +193,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 18),
+                            const SizedBox(height: 15),
 
                             /////////// Popular Categories /////////
                             Row(
@@ -220,6 +225,14 @@ class _HomePageState extends State<HomePage> {
                                     icon: c.icon,
                                     bg: Colors.white.withOpacity(0.16),
                                     fg: cs.onPrimary,
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => SportsPage(),
+                                        ),
+                                      );
+                                    },
                                   );
                                 },
                               ),
@@ -298,7 +311,12 @@ class _HomePageState extends State<HomePage> {
                       ),
                       const Spacer(),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => ViewAllPage()),
+                          );
+                        },
                         child: const Text("View all"),
                       ),
                     ],

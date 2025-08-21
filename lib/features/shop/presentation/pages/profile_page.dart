@@ -1,6 +1,11 @@
 // lib/features/account/presentation/pages/profile.dart
 import 'package:amazify/features/shop/presentation/pages/cart.dart';
+import 'package:amazify/features/shop/presentation/pages/addreses_profile.dart';
 import 'package:amazify/features/shop/presentation/pages/notifications.dart';
+import 'package:amazify/features/shop/presentation/pages/order_profile.dart';
+import 'package:amazify/features/shop/presentation/pages/payment_methods.dart';
+import 'package:amazify/features/shop/presentation/pages/payments_profile.dart'
+    hide PaymentCard;
 import 'package:amazify/features/shop/presentation/pages/profile_edit.dart';
 import 'package:amazify/features/shop/presentation/widgets/badge_button.dart';
 import 'package:amazify/features/shop/presentation/widgets/custom_appbar.dart';
@@ -204,7 +209,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         icon: Iconsax.box,
                         title: 'My Orders',
                         subtitle: 'Track, return, or buy again',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const OrdersPage(),
+                            ),
+                          );
+                        },
                       ),
                       _Tile(
                         icon: Iconsax.heart,
@@ -216,13 +228,34 @@ class _ProfilePageState extends State<ProfilePage> {
                         icon: Iconsax.card,
                         title: 'Payments',
                         subtitle: 'Cards, wallets & refunds',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => PaymentPage(
+                                currency: 'Rs ',
+                                totalAmount: 42999,
+
+                                onPay: (method, card) async {
+                                  // TODO: call your backend/payment gateway here
+                                },
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       _Tile(
                         icon: Iconsax.location,
                         title: 'Addresses',
                         subtitle: 'Shipping & billing',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AddresesPage(),
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 12),
 
