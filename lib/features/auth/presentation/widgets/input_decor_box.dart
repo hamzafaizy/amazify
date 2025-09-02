@@ -1,4 +1,3 @@
-// ---------------Text Field Decoration for Auth Inputs----------------
 import 'package:flutter/material.dart';
 
 InputDecoration authDecoration(
@@ -9,18 +8,13 @@ InputDecoration authDecoration(
   final cs = Theme.of(context).colorScheme;
   return InputDecoration(
     labelText: label,
-    prefixIcon: Icon(icon),
-    filled: true,
-    fillColor: cs.surfaceContainerHigh,
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(50)),
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
-      borderSide: BorderSide(color: cs.outlineVariant),
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: BorderSide(color: cs.primary),
-    ),
+    prefixIcon: Icon(icon, color: cs.primary),
+    isDense: true,
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: cs.primary, width: 1.6),
+    ),
   );
 }

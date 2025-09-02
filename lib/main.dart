@@ -1,8 +1,9 @@
+import 'package:amazify/features/onboarding/pages/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:amazify/app/theme/custom_theme/glass_backdrop.dart';
 import 'package:amazify/app/theme/custom_theme/theme_controller.dart';
 import 'package:amazify/app/theme/theme.dart';
-import 'package:amazify/features/onboarding/onboarding.dart';
+
 import 'package:amazify/core/splash_screen/splash_screen.dart';
 
 void main() => runApp(const App());

@@ -10,40 +10,52 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  # Firebase (keep these new)
+  firebase_core: ^4.1.0
+  firebase_auth: ^6.0.2
+
+  # Social auth
+  flutter_facebook_auth: ^7.1.2 # <-- upgrade to support http 1.x
+  google_sign_in: ^6.2.1 # <-- upgrade iOS pod to modern GoogleSignIn
+
+  # Networking
+  http: ^1.5.0
+
+  # State & UI (unchanged)
+  provider: ^6.1.5+1
   flutter_animate: ^4.0.0
   font_awesome_flutter: ^10.2.0
-
   animate_do: ^4.2.0
   audioplayers: ^6.5.0
-
   cupertino_icons: ^1.0.8
   device_info_plus: ^11.5.0
   dio: ^5.9.0
-
   flutter_bloc: ^9.1.1
   flutter_datetime_picker: ^1.5.1
-
   flutter_secure_storage: ^9.2.4
   flutter_slider_drawer: ^3.0.2
   ftoast: ^2.0.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  http: ^1.5.0
   iconsax: ^0.0.8
   intl: ^0.20.2
   liquid_glass_renderer: ^0.1.1-dev.10
   logger: ^2.6.1
   lottie: ^3.3.0
   panara_dialogs: ^0.1.5
-  provider: ^6.1.5
   rive: ^0.13.20
   shared_preferences: ^2.5.3
   smooth_page_indicator: ^1.2.1
   url_launcher: ^6.3.2
   uuid: ^4.5.1
-
   carousel_slider: ^5.1.1
   google_fonts:
+  dartz: ^0.10.1
+  get_it: ^8.2.0
+  supabase_flutter: ^2.10.0
+  fpdart: ^1.1.1
+  internet_connection_checker_plus: ^2.7.2
 
 dev_dependencies:
   flutter_test:

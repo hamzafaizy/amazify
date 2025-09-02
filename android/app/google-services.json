@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "220119097755",
+    "project_id": "amazify-dce64",
+    "storage_bucket": "amazify-dce64.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220119097755:android:2a1e434e9dca744cc5413e",
+        "android_client_info": {
+          "package_name": "com.example.amazify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "220119097755-nj30747qevicn75aj1doqmvimhldk08c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.amazify",
+            "certificate_hash": "66f6bf7fe98f5ae10d2105113f657eaa46ecb171"
+          }
+        },
+        {
+          "client_id": "220119097755-732dd53bkureshlut2i3aqjus33vq0s1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQsFTRTzBAutiJBSD_0P2rvmv-7Ndwj5E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "220119097755-732dd53bkureshlut2i3aqjus33vq0s1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "220119097755-abql0d3m6hhkduiqp299mkucdd23o173.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.amazify"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

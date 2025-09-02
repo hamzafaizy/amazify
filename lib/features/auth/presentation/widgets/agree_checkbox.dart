@@ -1,19 +1,19 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AgreeToPolicies extends StatefulWidget {
   const AgreeToPolicies({
     super.key,
-    this.initialValue = false,
-    this.privacyUrl = 'https://example.com/privacy',
-    this.termsUrl = 'https://example.com/terms',
-    this.onChanged,
+    required this.initialValue,
+    required this.privacyUrl,
+    required this.termsUrl,
+    required this.onChanged,
   });
 
   final bool initialValue;
   final String privacyUrl;
   final String termsUrl;
-  final ValueChanged<bool>? onChanged;
+  final ValueChanged<bool> onChanged;
 
   @override
   State<AgreeToPolicies> createState() => _AgreeToPoliciesState();
@@ -22,46 +22,53 @@ class AgreeToPolicies extends StatefulWidget {
 class _AgreeToPoliciesState extends State<AgreeToPolicies> {
   late bool _checked = widget.initialValue;
 
-  Future<void> _open(String url) async {
-    final uri = Uri.parse(url);
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme.bodySmall;
-    final link = text?.copyWith(
-      decoration: TextDecoration.underline,
-      color: Theme.of(context).colorScheme.primary,
-      fontWeight: FontWeight.w600,
-    );
+    final cs = Theme.of(context).colorScheme;
+    final style = Theme.of(context).textTheme.bodySmall;
 
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Checkbox.adaptive(
+        Checkbox(
           value: _checked,
           onChanged: (v) {
             setState(() => _checked = v ?? false);
-            widget.onChanged?.call(_checked);
+            widget.onChanged(_checked);
           },
         ),
         const SizedBox(width: 8),
         Expanded(
-          child: Wrap(
-            children: [
-              Text('I agree to the ', style: text),
-              InkWell(
-                onTap: () => _open(widget.privacyUrl),
-                child: Text('Privacy Policy', style: link),
-              ),
-              Text(' and ', style: text),
-              InkWell(
-                onTap: () => _open(widget.termsUrl),
-                child: Text('Terms of Use', style: link),
-              ),
-              Text('.', style: text),
-            ],
+          child: RichText(
+            text: TextSpan(
+              style: style?.copyWith(color: cs.onSurface),
+              children: [
+                const TextSpan(text: 'I agree to the '),
+                TextSpan(
+                  text: 'Terms',
+                  style: style?.copyWith(
+                    color: cs.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      /* open terms url */
+                    },
+                ),
+                const TextSpan(text: ' and '),
+                TextSpan(
+                  text: 'Privacy Policy',
+                  style: style?.copyWith(
+                    color: cs.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      /* open privacy url */
+                    },
+                ),
+                const TextSpan(text: '.'),
+              ],
+            ),
           ),
         ),
       ],
