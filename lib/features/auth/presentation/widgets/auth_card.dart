@@ -11,6 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:rive/rive.dart' hide LinearGradient, Image;
 
+// 🔽 Add Firebase
+import 'package:firebase_auth/firebase_auth.dart';
+
 /// Public start mode to choose the initial card.
 enum AuthStart { signIn, signUp }
 
@@ -52,6 +55,8 @@ class _AuthCardState extends State<AuthCard> {
   late SMITrigger _successAnim;
   late SMITrigger _errorAnim;
   late SMITrigger _confettiAnim;
+  bool _checkReady = false;
+  bool _confettiReady = false;
 
   @override
   void initState() {
@@ -72,6 +77,7 @@ class _AuthCardState extends State<AuthCard> {
       artboard.addController(controller);
       _successAnim = controller.findInput<bool>("Check") as SMITrigger;
       _errorAnim = controller.findInput<bool>("Error") as SMITrigger;
+      _checkReady = true;
     }
   }
 
@@ -85,6 +91,7 @@ class _AuthCardState extends State<AuthCard> {
       artboard.addController(controller);
       _confettiAnim =
           controller.findInput<bool>("Trigger explosion") as SMITrigger;
+      _confettiReady = true;
     }
   }
 
@@ -99,47 +106,168 @@ class _AuthCardState extends State<AuthCard> {
     super.dispose();
   }
 
-  void _goVerifyAndSimulateLogin() {
-    if (_isLoading) return;
+  // ───────────────────────── Firebase Helpers ─────────────────────────
 
-    setState(() => _isLoading = true);
+  void _setLoading(bool v) => setState(() => _isLoading = v);
 
-    // Navigate to verify-email page
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const VerifyEmailPage()),
-    );
-
-    // Fake validation for demo UX
-    final isValid =
-        _emailCtrl.text.trim().isNotEmpty && _passCtrl.text.trim().isNotEmpty;
-
-    // Trigger check/error after a short delay
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) {
-        isValid ? _successAnim.fire() : _errorAnim.fire();
-      }
-    });
-
-    // Stop loading + confetti
-    Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      setState(() => _isLoading = false);
-      if (isValid) _confettiAnim.fire();
-    });
-
-    // Complete to app root if valid
-    if (isValid) {
-      Future.delayed(const Duration(seconds: 4), () {
-        if (!mounted) return;
-        Navigator.of(
-          context,
-        ).pushReplacement(MaterialPageRoute(builder: (_) => const RootNav()));
-        _emailCtrl.clear();
-        _passCtrl.clear();
-      });
+  void _playSuccess() {
+    if (_checkReady) {
+      try {
+        _successAnim.fire();
+      } catch (_) {}
+    }
+    if (_confettiReady) {
+      try {
+        _confettiAnim.fire();
+      } catch (_) {}
     }
   }
+
+  void _playError() {
+    if (_checkReady) {
+      try {
+        _errorAnim.fire();
+      } catch (_) {}
+    }
+  }
+
+  String _mapFirebaseError(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'invalid-email':
+        return 'Invalid email address.';
+      case 'user-disabled':
+        return 'This account has been disabled.';
+      case 'user-not-found':
+        return 'No user found with that email.';
+      case 'wrong-password':
+        return 'Incorrect password.';
+      case 'email-already-in-use':
+        return 'That email is already in use.';
+      case 'weak-password':
+        return 'Password is too weak (min 6 chars).';
+      case 'operation-not-allowed':
+        return 'This sign-in method is disabled.';
+      default:
+        return e.message ?? 'Authentication error.';
+    }
+  }
+
+  void _toast(String msg) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  bool _validateSignInFields() {
+    final email = _emailCtrl.text.trim();
+    final pass = _passCtrl.text.trim();
+    if (email.isEmpty || pass.isEmpty) {
+      _toast('Enter email & password');
+      return false;
+    }
+    return true;
+  }
+
+  bool _validateSignUpFields() {
+    final email = _emailCtrl.text.trim();
+    final pass = _passCtrl.text.trim();
+    if (!_agreed) {
+      _toast('Please agree to the terms to continue');
+      return false;
+    }
+    if (email.isEmpty || pass.isEmpty) {
+      _toast('Email & password are required');
+      return false;
+    }
+    if (pass.length < 6) {
+      _toast('Password must be at least 6 characters');
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> _onSignIn() async {
+    if (_isLoading) return;
+    if (!_validateSignInFields()) {
+      _playError();
+      return;
+    }
+
+    _setLoading(true);
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailCtrl.text.trim(),
+        password: _passCtrl.text,
+      );
+
+      _playSuccess();
+      // small delay to let animation feel good
+      await Future.delayed(const Duration(milliseconds: 900));
+
+      if (!mounted) return;
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const RootNav()));
+
+      _emailCtrl.clear();
+      _passCtrl.clear();
+    } on FirebaseAuthException catch (e) {
+      _playError();
+      _toast(_mapFirebaseError(e));
+    } catch (_) {
+      _playError();
+      _toast('Something went wrong. Please try again.');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> _onSignUp() async {
+    if (_isLoading) return;
+    if (!_validateSignUpFields()) {
+      _playError();
+      return;
+    }
+
+    _setLoading(true);
+    try {
+      final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailCtrl.text.trim(),
+        password: _passCtrl.text,
+      );
+
+      // Optional profile display name (first + last or username)
+      final displayName =
+          (_firstNameCtrl.text.trim().isNotEmpty ||
+              _lastNameCtrl.text.trim().isNotEmpty)
+          ? '${_firstNameCtrl.text.trim()} ${_lastNameCtrl.text.trim()}'.trim()
+          : _usernameCtrl.text.trim();
+      if (displayName.isNotEmpty) {
+        await cred.user?.updateDisplayName(displayName);
+      }
+
+      // Send verification email
+      await cred.user?.sendEmailVerification();
+
+      _playSuccess();
+      await Future.delayed(const Duration(milliseconds: 800));
+
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const VerifyEmailPage()),
+      );
+    } on FirebaseAuthException catch (e) {
+      _playError();
+      _toast(_mapFirebaseError(e));
+    } catch (_) {
+      _playError();
+      _toast('Could not create account. Please try again.');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // ───────────────────────── UI Shell (unchanged visuals) ─────────────────────────
 
   Widget _cardShell({required Widget child}) {
     final cs = Theme.of(context).colorScheme;
@@ -259,10 +387,26 @@ class _AuthCardState extends State<AuthCard> {
                   onToggleObscure: () => setState(() => _obscure = !_obscure),
                   onRememberChanged: (v) =>
                       setState(() => _rememberMe = v ?? true),
-                  onForgotPressed: () {
-                    // You may navigate to forgot page here if needed.
+                  onForgotPressed: () async {
+                    // Optional: send reset link if email valid
+                    final email = _emailCtrl.text.trim();
+                    if (email.isEmpty) {
+                      _toast('Enter your email to reset password');
+                      return;
+                    }
+                    try {
+                      _setLoading(true);
+                      await FirebaseAuth.instance.sendPasswordResetEmail(
+                        email: email,
+                      );
+                      _toast('Password reset email sent');
+                    } on FirebaseAuthException catch (e) {
+                      _toast(_mapFirebaseError(e));
+                    } finally {
+                      _setLoading(false);
+                    }
                   },
-                  onSubmit: _goVerifyAndSimulateLogin,
+                  onSubmit: _onSignIn, // ✅ Firebase Sign-In
                   onCreateAccountPressed: () =>
                       setState(() => _mode = _AuthMode.signUp),
                 )
@@ -280,7 +424,7 @@ class _AuthCardState extends State<AuthCard> {
                   onAgreeChanged: (v) => setState(() => _agreed = v),
                   onBackToSignIn: () =>
                       setState(() => _mode = _AuthMode.signIn),
-                  onSubmit: _goVerifyAndSimulateLogin,
+                  onSubmit: _onSignUp, // ✅ Firebase Sign-Up
                 ),
         ),
       ),

@@ -1,4 +1,5 @@
 // lib/features/accounts/presentation/widgets/logged_in_info.dart
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -10,6 +11,19 @@ class LoggedInInfo extends StatelessWidget {
 
   final String name;
   final String email;
+
+  Future<void> _logout(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Logged out successfully")));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Logout failed: $e")));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +84,7 @@ class LoggedInInfo extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () => _logout(context),
                 icon: Icon(Iconsax.logout, color: cs.surface),
                 label: Text('Log out', style: TextStyle(color: cs.surface)),
               ),

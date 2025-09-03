@@ -1,8 +1,10 @@
 // lib/features/accounts/presentation/pages/profile_page.dart
+import 'package:amazify/core/common/entities/user.dart' hide User;
 import 'package:amazify/core/widgets/custom_appbar.dart';
 import 'package:amazify/features/cart/presentation/pages/cart_page.dart';
 import 'package:amazify/features/cart/presentation/widgets/badge_button.dart';
 import 'package:amazify/features/orders/presentation/pages/order_profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
@@ -37,7 +39,19 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _darkMode = false;
 
   // TODO: wire this to your auth state provider/bloc
-  bool get _loggedIn => false;
+  bool _loggedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Listen for login/logout changes
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      setState(() {
+        _loggedIn = user != null; // ✅ true if logged in, false if not
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
